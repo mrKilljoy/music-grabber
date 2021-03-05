@@ -1,2 +1,2 @@
 # music-grabber
-A tool for fetching audio from online services
+A tool for fetching audio from online services.
