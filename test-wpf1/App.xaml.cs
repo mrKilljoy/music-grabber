@@ -40,20 +40,12 @@ namespace test_wpf1
             }
             catch (FileNotFoundException)
             {
-                MessageBox.Show(
-                    AppConstants.Messages.MissingConfigurationFileErrorMessage,
-                    caption: nameof(MessageBoxImage.Error),
-                    button: MessageBoxButton.OK,
-                    icon: MessageBoxImage.Error); ;
+                ErrorHelper.ShowError(AppConstants.Messages.MissingConfigurationFileErrorMessage);
                 Environment.Exit(1);
             }
             catch (Exception)
             {
-                MessageBox.Show(
-                    AppConstants.Messages.UnknownErrorMessage,
-                    caption: nameof(MessageBoxImage.Error),
-                    button: MessageBoxButton.OK,
-                    icon: MessageBoxImage.Error); ;
+                ErrorHelper.ShowError(AppConstants.Messages.UnknownErrorMessage);
                 Environment.Exit(1);
             }
         }

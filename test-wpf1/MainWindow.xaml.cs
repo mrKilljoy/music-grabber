@@ -165,10 +165,7 @@ namespace test_wpf1
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format(AppConstants.Messages.UnknownErrorWithDetailsMessage, ex.Message),
-                    caption: nameof(MessageBoxImage.Error),
-                    button: MessageBoxButton.OK,
-                    icon: MessageBoxImage.Error);
+                ErrorHelper.ShowError(string.Format(AppConstants.Messages.UnknownErrorWithDetailsMessage, ex.Message));
             }
         }
 
@@ -180,10 +177,7 @@ namespace test_wpf1
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format(AppConstants.Messages.UnknownErrorWithDetailsMessage, ex.Message),
-                    caption: nameof(MessageBoxImage.Error),
-                    button: MessageBoxButton.OK,
-                    icon: MessageBoxImage.Error);
+                ErrorHelper.ShowError(string.Format(AppConstants.Messages.UnknownErrorWithDetailsMessage, ex.Message));
             }
         }
 
@@ -195,10 +189,7 @@ namespace test_wpf1
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format(AppConstants.Messages.UnknownErrorWithDetailsMessage, ex.Message),
-                    caption: nameof(MessageBoxImage.Error),
-                    button: MessageBoxButton.OK,
-                    icon: MessageBoxImage.Error);
+                ErrorHelper.ShowError(string.Format(AppConstants.Messages.UnknownErrorWithDetailsMessage, ex.Message));
             }
         }
 
