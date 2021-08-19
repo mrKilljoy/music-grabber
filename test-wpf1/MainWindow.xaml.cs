@@ -83,6 +83,9 @@ namespace test_wpf1
             CommandBindings.Add(new CommandBinding(AppCommands.DownloadCommand, HandleDownloadCommand));
             this.ViewModel.DownloadReacted += HandleDownloadEvent;
 
+            this.ViewModel.TrackEnqueueingReacted += HandleTrackEnqueueingEvent;
+            this.ViewModel.TrackDequeueingReacted += HandleTrackDequeueingEvent;
+
             //  handle queries differently?
             this.ViewModel.QueryReacted += HandleQueryEvent;
         }
@@ -185,6 +188,12 @@ namespace test_wpf1
         {
             try
             {
+                if (this.ViewModel.CurrentTrack is null)
+                {
+                    ErrorHelper.ShowError(AppConstants.Messages.NoTrackSelectedMessage);
+                    return;
+                }
+
                 this.ViewModel.TriggerDownload(this);
             }
             catch (Exception ex)
@@ -252,6 +261,46 @@ namespace test_wpf1
             }, DispatcherPriority.Normal);
         }
 
+        private async void HandleTrackEnqueueingEvent(object sender, EntityQueuedEventArgs e)
+        {
+            await this.Dispatcher.BeginInvoke(delegate
+            {
+                this.viewModel.Queue.Enqueue(e.Track as Track);
+            }, DispatcherPriority.Normal);
+        }
+
+        private async void HandleTrackDequeueingEvent(object sender, EntityQueuedEventArgs e)
+        {
+            await this.Dispatcher.BeginInvoke(delegate
+            {
+                this.viewModel.Queue.Dequeue();
+            }, DispatcherPriority.Normal);
+        }
+
         #endregion
+
+        private async void xpndr_Expanded(object sender, RoutedEventArgs e)
+        {
+            await this.Dispatcher.BeginInvoke(delegate
+            {
+                if (this.xpndr.IsExpanded)
+                {
+                    Canvas.SetZIndex(this.cnvQueueLayer, 5);
+                    Canvas.SetZIndex(this.xpndr, 5);
+                }
+            }, DispatcherPriority.Normal);
+        }
+
+        private async void xpndr_Collapsed(object sender, RoutedEventArgs e)
+        {
+            await this.Dispatcher.BeginInvoke(delegate
+            {
+                if (!this.xpndr.IsExpanded)
+                {
+                    Canvas.SetZIndex(this.cnvQueueLayer, -1);
+                    Canvas.SetZIndex(this.xpndr, -1);
+                }
+            }, DispatcherPriority.Normal);
+        }
     }
 }

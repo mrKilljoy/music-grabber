@@ -9,6 +9,8 @@ namespace test_wpf1.Contracts
     /// </summary>
     public interface IMusicDownloadManager
     {
+        bool IsBusy { get; }
+
         Task<TrackDownloadResult> DownloadAsync(Track track, bool overwrite = false);
     }
 }

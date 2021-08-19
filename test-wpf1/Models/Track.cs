@@ -1,8 +1,9 @@
 ﻿using System;
+using test_wpf1.Contracts;
 
 namespace test_wpf1.Models
 {
-    public class Track
+    public class Track : IQueryableEntity
     {
         public string Artist { get; set; }
 

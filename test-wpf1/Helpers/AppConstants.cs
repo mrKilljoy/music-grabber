@@ -23,6 +23,7 @@
             public const string MissingConfigurationFileErrorMessage = "No configuration has been found.\nPress 'OK' to exit the app.";
             public const string UnknownErrorMessage = "An unknown error has occurred.\nPress 'OK' to exit the app.";
             public const string UnknownErrorWithDetailsMessage = "An unknown error has occurred.\nDetails: {0}";
+            public const string NoTrackSelectedMessage = "There are no selected tracks to download.";
         }
 
         public static class Metadata

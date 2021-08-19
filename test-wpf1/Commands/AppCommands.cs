@@ -9,5 +9,9 @@ namespace test_wpf1.Commands
         public static readonly ICommand LogoutCommand = new RoutedUICommand("Logout", nameof(LogoutCommand), typeof(AppCommands));
 
         public static readonly ICommand DownloadCommand = new RoutedUICommand("Download", nameof(DownloadCommand), typeof(AppCommands));
+
+        public static readonly ICommand EnqueueTrackCommand = new RoutedUICommand("EnqueueTrack", nameof(EnqueueTrackCommand), typeof(AppCommands));
+
+        public static readonly ICommand DequeueTrackCommand = new RoutedUICommand("DequeueTrack", nameof(DequeueTrackCommand), typeof(AppCommands));
     }
 }

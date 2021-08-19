@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Timers;
 using test_wpf1.Contracts;
 using test_wpf1.Delegates;
+using test_wpf1.Helpers;
 using test_wpf1.Models;
 
 namespace test_wpf1.ViewModels
@@ -17,6 +20,9 @@ namespace test_wpf1.ViewModels
         public event EventHandler QueryReacted;
         public event EventHandler LogoutReacted;
 
+        public event TrackQueuedEventHandler TrackEnqueueingReacted;
+        public event TrackQueuedEventHandler TrackDequeueingReacted;
+
         #endregion
 
         #region Fields
@@ -26,10 +32,14 @@ namespace test_wpf1.ViewModels
         private readonly IServiceManager serviceManager;
         private readonly IMusicDownloadManager musicDownloadManager;
         private readonly IMusicService musicService;
+        private readonly IQueueManager queueManager;
 
         private ObservableCollection<Track> tracks;
+        private ObservableQueue<Track> queue;
         private Track currentTrack;
         private string queryInput;
+
+        private readonly Timer queueHandlingTimer; 
 
         #endregion
 
@@ -38,12 +48,14 @@ namespace test_wpf1.ViewModels
         public MainWindowViewModel(IAuthManager authManager,
             ICredentialsReader credentialsReader,
             IServiceManager serviceManager,
-            IMusicDownloadManager musicDownloadManager)
+            IMusicDownloadManager musicDownloadManager,
+            IQueueManager queueManager)
         {
             this.authManager = authManager;
             this.credentialsReader = credentialsReader;
             this.serviceManager = serviceManager;
             this.musicDownloadManager = musicDownloadManager;
+            this.queueManager = queueManager;
 
             //  todo: handle it differently
             var musicService = this.serviceManager.GetServiceAsync("music").GetAwaiter().GetResult();
@@ -52,8 +64,15 @@ namespace test_wpf1.ViewModels
                 this.musicService = ms;
             }
 
+            this.queueManager.QueueAdded += this.TriggerEnqueueing;
+            this.queueManager.QueueRemoved += this.TriggerDequeueing;
+
             this.tracks = new ObservableCollection<Track>();
+            this.queue = new ObservableQueue<Track>();
             this.queryInput = string.Empty;
+
+            this.queueHandlingTimer = new Timer(500);
+            this.queueHandlingTimer.Elapsed += QueueTimerTickAsync;
         }
 
         #endregion
@@ -87,33 +106,34 @@ namespace test_wpf1.ViewModels
             }
         }
 
+        public ObservableQueue<Track> Queue
+        {
+            get => this.queue;
+            set
+            {
+                this.queue = value;
+                Notify(nameof(Queue));
+            }
+        }
+
         #endregion
 
-        #region Methods
-
-        private void Notify(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+        #region Trigger methods for outside calls
 
         public async void TriggerLogin(object o)
         {
-            var response = await this.authManager.AuthenticateAsync((await this.credentialsReader.GetCredentialsAsync()));
+            var response = await this.authManager.AuthenticateAsync(await this.credentialsReader.GetCredentialsAsync());
 
             LoginReacted?.Invoke(this, new AuthEventArgs(response));
         }
 
         public async void TriggerDownload(object caller, bool overwrite)
         {
-            var result = await this.musicDownloadManager.DownloadAsync(this.CurrentTrack, overwrite);
-
-            DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(result));
+            this.queueManager.Enqueue(this.currentTrack);
         }
 
         public async void TriggerQuery(object caller, string input)
         {
-
             var receivedTracks = await this.musicService.GetTracksAsync(string.Empty);
             this.Tracks = new ObservableCollection<Track>(receivedTracks);
 
@@ -125,6 +145,57 @@ namespace test_wpf1.ViewModels
             Tracks.Clear();
 
             LogoutReacted?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private async void TriggerEnqueueing(object caller, EntityQueuedEventArgs ea)
+        {
+            this.TrackEnqueueingReacted?.Invoke(this, ea);
+            this.queueHandlingTimer.Start();
+        }
+
+        private async void TriggerDequeueing(object caller, EntityQueuedEventArgs ea)
+        {
+            this.TrackDequeueingReacted?.Invoke(this, ea);
+        }
+
+        private async void QueueTimerTickAsync(object o, EventArgs e)
+        {
+            if (this.queueManager.Count() == 0)
+            {
+                this.queueHandlingTimer.Stop();
+                return;
+            }
+
+            if (!this.musicDownloadManager.IsBusy && this.queueManager.Count() > 0)
+            {
+                await Task.Run(async () =>
+                {
+                    var t = this.queueManager.Peek() as Track;
+                    return await this.musicDownloadManager.DownloadAsync(t, true);
+                })
+                .ContinueWith(a =>
+                {
+                    var results = a.Result;
+                    var track = this.queueManager.Peek() as Track;
+
+                    if (results.IsSuccess && results.OperationData.TryGet<Guid>("UID") == track.UID)
+                    {
+                        //  change it from UI context??
+                        DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(results));
+                        this.queueManager.Dequeue();
+                    }
+                });
+            }
+        }
+
+        private void Notify(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion

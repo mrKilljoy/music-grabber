@@ -10,9 +10,10 @@ namespace test_wpf1.Helpers
             OperationData = new Dictionary<string, object>();
         }
 
-        public TrackDownloadResult(bool isSuccess, IDictionary<string, object> operationData) : this(isSuccess)
+        public TrackDownloadResult(bool isSuccess, IDictionary<string, object> operationData = null) : this(isSuccess)
         {
-            OperationData = operationData;
+            if (operationData != null)
+                OperationData = operationData;
         }
 
         public bool IsSuccess { get; }

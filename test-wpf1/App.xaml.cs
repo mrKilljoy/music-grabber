@@ -26,7 +26,30 @@ namespace test_wpf1
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile(AppConstants.ConfigurationFileName, optional: false, reloadOnChange: true);
 
-            try
+            //try
+            //{
+            //    Configuration = builder.Build();
+
+            //    var serviceCollection = new ServiceCollection();
+            //    RegisterServices(serviceCollection);
+
+            //    ServiceProvider = serviceCollection.BuildServiceProvider();
+
+            //    var topWindow = ServiceProvider.GetService<IMainView>();
+            //    topWindow.Show();
+            //}
+            //catch (FileNotFoundException)
+            //{
+            //    ErrorHelper.ShowError(AppConstants.Messages.MissingConfigurationFileErrorMessage);
+            //    Environment.Exit(1);
+            //}
+            //catch (Exception)
+            //{
+            //    ErrorHelper.ShowError(AppConstants.Messages.UnknownErrorMessage);
+            //    Environment.Exit(1);
+            //}
+
+            Safeguard.TryRun(() =>
             {
                 Configuration = builder.Build();
 
@@ -37,17 +60,7 @@ namespace test_wpf1
 
                 var topWindow = ServiceProvider.GetService<IMainView>();
                 topWindow.Show();
-            }
-            catch (FileNotFoundException)
-            {
-                ErrorHelper.ShowError(AppConstants.Messages.MissingConfigurationFileErrorMessage);
-                Environment.Exit(1);
-            }
-            catch (Exception)
-            {
-                ErrorHelper.ShowError(AppConstants.Messages.UnknownErrorMessage);
-                Environment.Exit(1);
-            }
+            }, terminateOnFailure: true);
         }
 
         private void RegisterServices(ServiceCollection services)
@@ -60,6 +73,7 @@ namespace test_wpf1
             services.AddScoped<IAuthManager, DummyAuthManager>();
             services.AddScoped<IServiceManager, DummyServiceManager>();
             services.AddScoped<IMusicDownloadManager, DummyMusicDownloadManager>();
+            services.AddScoped<IQueueManager, DownloadQueueManager>();
         }
     }
 }

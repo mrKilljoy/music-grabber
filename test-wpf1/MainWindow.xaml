@@ -20,11 +20,13 @@
                 <ColumnDefinition Width="4*"/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition/>
-                <RowDefinition Height="3*"/>
+                <RowDefinition/>
+                <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <Button x:Name="btnLogout" Content="Logout" 
                     Height="30" Width="50" Grid.Column="3" 
@@ -46,7 +48,7 @@
                      Text="{Binding QueryInput, UpdateSourceTrigger=PropertyChanged}"/>
             <TextBlock x:Name="tbStatus" Grid.Column="1" Grid.Row="0" 
                        Height="30" Margin="10,0"/>
-            <ListView Name="lv1" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" 
+            <ListView Name="lv1" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="2" 
                       Margin="0" 
                       SelectionMode="Single" 
                       ItemsSource="{Binding Path=Tracks}" 
@@ -62,6 +64,30 @@
                     </GridView>
                 </ListView.View>
             </ListView>
+            <Label x:Name="lbQueue" Grid.Column="2" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"
+                   Content="{Binding Path=Queue.Count, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Background="#FFF1F1F1"/>
+            <Canvas x:Name="cnvQueueLayer" Panel.ZIndex="-1">
+                <Expander x:Name="xpndr" Header="Download queue"
+                          Width="{Binding RelativeSource
+                            ={RelativeSource Mode=FindAncestor, 
+                                AncestorType={x:Type Canvas}}, 
+                                Path=ActualWidth}" 
+                          Height="250" 
+                          Expanded="xpndr_Expanded" 
+                          Collapsed="xpndr_Collapsed" >
+                    <Grid Background="#FFE5E5E5" Margin="0,5,0,0">
+                        <ListView ItemsSource="{Binding Path=Queue}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ListViewItem Content="{Binding Path=Title}"/>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </Expander>
+            </Canvas>
         </Grid>
     </Grid>
 </Window>

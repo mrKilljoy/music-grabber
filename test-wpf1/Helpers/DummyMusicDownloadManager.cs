@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using test_wpf1.Configuration;
 using test_wpf1.Contracts;
+using test_wpf1.Internals.Exceptions;
 using test_wpf1.Models;
 
 namespace test_wpf1.Helpers
@@ -12,10 +14,13 @@ namespace test_wpf1.Helpers
     public sealed class DummyMusicDownloadManager : IMusicDownloadManager
     {
         private readonly DownloadSettingsSection configSection;
+        private bool isBusy;
+
+        private readonly object syncAnchor = new object();
 
         public DummyMusicDownloadManager(IOptions<DownloadSettingsSection> options)
         {
-            if (options.Value == null)
+            if (options.Value is null)
                 throw new ArgumentNullException(nameof(options));
 
             if (string.IsNullOrEmpty(options.Value.OutputFolder))
@@ -26,8 +31,20 @@ namespace test_wpf1.Helpers
             this.configSection = options.Value;
         }
 
+        public bool IsBusy => this.isBusy;
+
         public Task<TrackDownloadResult> DownloadAsync(Track track, bool overwrite)
         {
+            if (IsBusy)
+            {
+                return Task.FromResult(new TrackDownloadResult(
+                    false,
+                    new Dictionary<string, object>
+                    {
+                        ["cancelationReason"] = "isBusy"
+                    }));
+            }
+
             var filename = BuildFileName(track);
 
             if (File.Exists(filename))
@@ -36,7 +53,7 @@ namespace test_wpf1.Helpers
                 {
                     return Task.FromResult(new TrackDownloadResult(false, new Dictionary<string, object>
                     {
-                        { "errorMessage", "a file with the same name already exists" }
+                        ["errorMessage"] = "a file with the same name already exists"
                     }));
                 }
                 else
@@ -45,13 +62,35 @@ namespace test_wpf1.Helpers
                 }
             }
 
-            using (var newFile = File.Create(filename))
+            lock (syncAnchor)
             {
-                newFile.WriteByte(1);
-                newFile.Flush();
-            }
+                try
+                {
+                    this.isBusy = true;
 
-            return Task.FromResult(new TrackDownloadResult(true));
+                    using (var newFile = File.Create(filename))
+                    {
+                        newFile.WriteByte(1);
+                        newFile.Flush();
+                    }
+
+                    Thread.Sleep(3000);
+
+                    return Task.FromResult(new TrackDownloadResult(
+                        true, new Dictionary<string, object>
+                        {
+                            [nameof(track.UID)] = track.UID
+                        }));
+                }
+                catch (Exception)
+                {
+                    throw new TrackDownloadingException();
+                }
+                finally
+                {
+                    this.isBusy = false;
+                }
+            }
         }
 
         private string BuildFileName(Track track)

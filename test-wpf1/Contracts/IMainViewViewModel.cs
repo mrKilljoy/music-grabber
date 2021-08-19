@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using test_wpf1.Delegates;
+using test_wpf1.Helpers;
 using test_wpf1.Models;
 
 namespace test_wpf1.Contracts
@@ -13,6 +14,8 @@ namespace test_wpf1.Contracts
         event EventHandler LogoutReacted;
         event TrackDownloadEventHandler DownloadReacted;
         event EventHandler QueryReacted;
+        event TrackQueuedEventHandler TrackEnqueueingReacted;
+        event TrackQueuedEventHandler TrackDequeueingReacted;
 
         #endregion
 
@@ -23,6 +26,8 @@ namespace test_wpf1.Contracts
         Track CurrentTrack { get; set; }
 
         string QueryInput { get; set; }
+
+        ObservableQueue<Track> Queue { get; set; }
 
         #endregion
 
