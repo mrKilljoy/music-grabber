@@ -1,4 +1,4 @@
-﻿namespace test_wpf1.Helpers
+﻿namespace test_wpf1.Internals
 {
     /// <summary>
     /// A class with constant values for the application.
@@ -13,9 +13,9 @@
 
         public static class Statuses
         {
-            public const string PreparingTitle = "preparing...";
-            public const string AuthenticationTitle = "authentication...";
-            public const string RetrievingDataTitle = "getting...";
+            public const string PreparingTitle = "...preparing";
+            public const string AuthenticationTitle = "...authorizing";
+            public const string RetrievingDataTitle = "...retrieving data";
         }
 
         public static class Messages

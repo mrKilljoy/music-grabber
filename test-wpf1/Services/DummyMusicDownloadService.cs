@@ -6,19 +6,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using test_wpf1.Configuration;
 using test_wpf1.Contracts;
+using test_wpf1.Helpers;
 using test_wpf1.Internals.Exceptions;
 using test_wpf1.Models;
 
-namespace test_wpf1.Helpers
+namespace test_wpf1.Services
 {
-    public sealed class DummyMusicDownloadManager : IMusicDownloadManager
+    public sealed class DummyMusicDownloadService : IMusicDownloadService
     {
         private readonly DownloadSettingsSection configSection;
         private bool isBusy;
 
         private readonly object syncAnchor = new object();
 
-        public DummyMusicDownloadManager(IOptions<DownloadSettingsSection> options)
+        public DummyMusicDownloadService(IOptions<DownloadSettingsSection> options)
         {
             if (options.Value is null)
                 throw new ArgumentNullException(nameof(options));
@@ -33,7 +34,7 @@ namespace test_wpf1.Helpers
 
         public bool IsBusy => this.isBusy;
 
-        public Task<TrackDownloadResult> DownloadAsync(Track track, bool overwrite)
+        public Task<TrackDownloadResult> DownloadAsync(Track track)
         {
             if (IsBusy)
             {
@@ -49,17 +50,10 @@ namespace test_wpf1.Helpers
 
             if (File.Exists(filename))
             {
-                if (!overwrite)
+                return Task.FromResult(new TrackDownloadResult(false, new Dictionary<string, object>
                 {
-                    return Task.FromResult(new TrackDownloadResult(false, new Dictionary<string, object>
-                    {
-                        ["errorMessage"] = "a file with the same name already exists"
-                    }));
-                }
-                else
-                {
-                    File.Delete(filename);
-                }
+                    ["errorMessage"] = "a file with the same name already exists"
+                }));
             }
 
             lock (syncAnchor)

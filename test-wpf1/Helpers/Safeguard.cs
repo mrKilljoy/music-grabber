@@ -26,19 +26,21 @@ namespace test_wpf1.Helpers
             }
         }
 
-        public static async Task TryRunAsync(Func<Task> func)
+        public static Task TryRunAsync(Func<Task> func)
         {
             try
             {
-                await func();
+                return func();
             }
             catch(AggregateException aex)
             {
                 //  create and show a single error message
+                return Task.CompletedTask;
             }
             catch (Exception ex)
             {
                 ErrorHelper.ShowError(ex.Message);
+                return Task.CompletedTask;
             }
         }
     }

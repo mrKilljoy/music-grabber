@@ -6,6 +6,7 @@ using System.Timers;
 using test_wpf1.Contracts;
 using test_wpf1.Delegates;
 using test_wpf1.Helpers;
+using test_wpf1.Internals;
 using test_wpf1.Models;
 
 namespace test_wpf1.ViewModels
@@ -30,8 +31,8 @@ namespace test_wpf1.ViewModels
         private readonly IAuthManager authManager;
         private readonly ICredentialsReader credentialsReader;
         private readonly IServiceManager serviceManager;
-        private readonly IMusicDownloadManager musicDownloadManager;
-        private readonly IQueueManager queueManager;
+        private readonly IMusicDownloadService musicDownloadManager;
+        private readonly IQueueService queueManager;
 
         private IMusicService musicService;
 
@@ -52,8 +53,8 @@ namespace test_wpf1.ViewModels
         public MainWindowViewModel(IAuthManager authManager,
             ICredentialsReader credentialsReader,
             IServiceManager serviceManager,
-            IMusicDownloadManager musicDownloadManager,
-            IQueueManager queueManager)
+            IMusicDownloadService musicDownloadManager,
+            IQueueService queueManager)
         {
             this.authManager = authManager;
             this.credentialsReader = credentialsReader;
@@ -189,7 +190,7 @@ namespace test_wpf1.ViewModels
                 await Task.Run(async () =>
                 {
                     var t = this.queueManager.Peek() as Track;
-                    return await this.musicDownloadManager.DownloadAsync(t, true);
+                    return await this.musicDownloadManager.DownloadAsync(t);
                 })
                 .ContinueWith(a =>
                 {

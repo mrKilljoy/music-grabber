@@ -7,6 +7,7 @@ using test_wpf1.Auth;
 using test_wpf1.Configuration;
 using test_wpf1.Contracts;
 using test_wpf1.Helpers;
+using test_wpf1.Internals;
 using test_wpf1.Services;
 using test_wpf1.ViewModels;
 using VkNet;
@@ -56,8 +57,8 @@ namespace test_wpf1
             services.AddSingleton<IAuthManager, VkAuthManager>();
             services.AddSingleton<IServiceManager, VkServiceManager>();
             services.AddScoped<IMusicService, VkMusicService>();
-            services.AddScoped<IMusicDownloadManager, VkMusicDownloadManager>();
-            services.AddScoped<IQueueManager, DownloadQueueManager>();
+            services.AddScoped<IMusicDownloadService, VkMusicDownloadService>();
+            services.AddScoped<IQueueService, DownloadQueueService>();
         }
     }
 }

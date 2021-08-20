@@ -7,23 +7,34 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using test_wpf1.Configuration;
 using test_wpf1.Contracts;
+using test_wpf1.Helpers;
 using test_wpf1.Internals.Exceptions;
 using test_wpf1.Models;
 
-namespace test_wpf1.Helpers
+namespace test_wpf1.Services
 {
-    public sealed class VkMusicDownloadManager : IMusicDownloadManager
+    public sealed class VkMusicDownloadService : IMusicDownloadService
     {
+        #region Fields
+
         private readonly Regex filenamePattern = new Regex("^([A-Za-z0-9 \\&\\-\\]){1,}\\(([0-9]){1,}\\).mp3$");
 
         private DownloadSettingsSection settings;
 
-        public VkMusicDownloadManager(IOptions<DownloadSettingsSection> options)
+        #endregion
+
+        #region .ctr
+
+        public VkMusicDownloadService(IOptions<DownloadSettingsSection> options)
         {
             this.settings = options.Value;
         }
 
-        public async Task<TrackDownloadResult> DownloadAsync(Track track, bool overwrite = false)
+        #endregion
+
+        #region Methods
+
+        public async Task<TrackDownloadResult> DownloadAsync(Track track)
         {
             using (var webClient = new WebClient())
             {
@@ -86,5 +97,7 @@ namespace test_wpf1.Helpers
 
             return fullTrackPath;
         }
+
+        #endregion
     }
 }

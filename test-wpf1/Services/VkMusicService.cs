@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using test_wpf1.Contracts;
-using test_wpf1.Helpers;
+using test_wpf1.Internals;
 using test_wpf1.Models;
 using VkNet;
 using VkNet.Model.RequestParams;

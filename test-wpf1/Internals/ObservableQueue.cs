@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace test_wpf1.Helpers
+namespace test_wpf1.Internals
 {
     public class ObservableQueue<T> : Queue<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {

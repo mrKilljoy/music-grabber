@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using test_wpf1.Delegates;
-using test_wpf1.Models;
+﻿using test_wpf1.Delegates;
 
 namespace test_wpf1.Contracts
 {
-    public interface IQueueManager
+    public interface IQueueService
     {
         #region Events
 
