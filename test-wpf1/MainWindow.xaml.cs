@@ -1,26 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using test_wpf1.Commands;
 using test_wpf1.Contracts;
 using test_wpf1.Delegates;
 using test_wpf1.Helpers;
 using test_wpf1.Models;
-using test_wpf1.Test;
 
 namespace test_wpf1
 {
@@ -70,24 +58,19 @@ namespace test_wpf1
         private void SetHandlers()
         {
             this.tb1.TextChanged += HandleQueryInput;
+
+            this.ViewModel.LoginReacted += HandleLoginEvent;
+            this.ViewModel.LogoutReacted += HandleLogoutEvent;
+            this.ViewModel.TrackEnqueueingReacted += HandleTrackEnqueueingEvent;
+            this.ViewModel.TrackDequeueingReacted += HandleTrackDequeueingEvent;
+            this.ViewModel.QueryReacted += HandleQueryEvent;
         }
 
         private void SetBindings()
         {
             CommandBindings.Add(new CommandBinding(AppCommands.LoginCommand, HandleLoginCommand));
-            this.ViewModel.LoginReacted += HandleLoginEvent;
-
             CommandBindings.Add(new CommandBinding(AppCommands.LogoutCommand, HandleLogoutCommand));
-            this.ViewModel.LogoutReacted += HandleLogoutEvent;
-
             CommandBindings.Add(new CommandBinding(AppCommands.DownloadCommand, HandleDownloadCommand));
-            this.ViewModel.DownloadReacted += HandleDownloadEvent;
-
-            this.ViewModel.TrackEnqueueingReacted += HandleTrackEnqueueingEvent;
-            this.ViewModel.TrackDequeueingReacted += HandleTrackDequeueingEvent;
-
-            //  handle queries differently?
-            this.ViewModel.QueryReacted += HandleQueryEvent;
         }
 
         private void SetControlsState(bool isEnabled)
@@ -147,9 +130,6 @@ namespace test_wpf1
                     this.tbStatus.Text = AppConstants.Statuses.RetrievingDataTitle;
                     this.tb1.IsReadOnly = true;
                 }, DispatcherPriority.Background);
-
-                //  extra time delay to prevent sending too many requests
-                await Task.Delay(300);
 
                 this.ViewModel.TriggerQuery(this, this.ViewModel.QueryInput);
             });
@@ -233,24 +213,6 @@ namespace test_wpf1
             await this.Dispatcher.BeginInvoke(delegate { SetAsLoggedOut(); }, DispatcherPriority.Normal);
         }
 
-        private void HandleDownloadEvent(object o, TrackDownloadEventArgs ea)
-        {
-            if (!ea.Response.IsSuccess
-                && ea.Response.OperationData.ContainsKey(AppConstants.Metadata.ErrorMessageField)
-                && ((string)ea.Response.OperationData[AppConstants.Metadata.ErrorMessageField]).Contains("exists"))
-            {
-                var mbd = MessageBox.Show(messageBoxText: AppConstants.Messages.ExistingFileMessage,
-                    caption: nameof(MessageBoxImage.Warning),
-                    icon: MessageBoxImage.Warning,
-                    button: MessageBoxButton.YesNo);
-
-                if (mbd == MessageBoxResult.Yes)
-                {
-                    this.ViewModel.TriggerDownload(this, true);
-                }
-            }
-        }
-
         private async void HandleQueryEvent(object sender, EventArgs e)
         {
             await this.Dispatcher.BeginInvoke(delegate
@@ -264,7 +226,7 @@ namespace test_wpf1
         {
             await this.Dispatcher.BeginInvoke(delegate
             {
-                this.viewModel.Queue.Enqueue(e.Track as Track);
+                this.ViewModel.Queue.Enqueue(e.Track as Track);
             }, DispatcherPriority.Normal);
         }
 
@@ -272,7 +234,7 @@ namespace test_wpf1
         {
             await this.Dispatcher.BeginInvoke(delegate
             {
-                this.viewModel.Queue.Dequeue();
+                this.ViewModel.Queue.Dequeue();
             }, DispatcherPriority.Normal);
         }
 

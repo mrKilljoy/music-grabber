@@ -123,7 +123,7 @@ namespace test_wpf1.ViewModels
 
             if (!response.IsSuccess)
             {
-                ErrorHelper.ShowError("Authorization was not successful");
+                ErrorHelper.ShowError(AppConstants.Messages.AuthorizationFailureMessage);
                 return;
             }
 

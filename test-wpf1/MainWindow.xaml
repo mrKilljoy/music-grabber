@@ -3,11 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:test_wpf1"
-        xmlns:md="clr-namespace:test_wpf1.Models"
         xmlns:cmd="clr-namespace:test_wpf1.Commands"
         mc:Ignorable="d"
-        Title="Grabber" Height="350" Width="600"
+        Title="Grabber" Height="350" Width="450"
         DataContext="{Binding}">
     <Window.Resources>
         <Style TargetType="Button" x:Key="buttonBoldFont">
@@ -17,7 +15,7 @@
     <Grid>
         <Grid x:Name="innerGrid" Margin="10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="2*"/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -26,7 +24,9 @@
                 <RowDefinition />
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
                 <RowDefinition Height="2*"/>
+                <RowDefinition Height="0.2*"/>
             </Grid.RowDefinitions>
             <Button x:Name="btnLogout" Content="Logout" 
                     Height="30" Width="50" Grid.Column="3" 
@@ -39,18 +39,16 @@
                     Style="{StaticResource buttonBoldFont}" 
                     Command="cmd:AppCommands.LoginCommand" />
             <Button x:Name="btnAct" Content="Download" 
-                    Height="30" Width="100" Grid.Column="1" Grid.ColumnSpan="2"
+                    Height="30" Width="70" Grid.Column="2" Grid.ColumnSpan="1"
                     Grid.Row="1" 
                     Style="{StaticResource buttonBoldFont}"
                     Command="cmd:AppCommands.DownloadCommand"/>
-            <TextBox Name="tb1" Grid.Column="0" Grid.Row="1" 
-                     Margin="0,20"
+            <TextBox Name="tb1" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="20"
+                     Margin="5"
                      Text="{Binding QueryInput, UpdateSourceTrigger=PropertyChanged}"/>
-            <TextBlock x:Name="tbStatus" Grid.Column="1" Grid.Row="0" 
-                       Height="30" Margin="10,0"/>
-            <ListView Name="lv1" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="2" 
-                      Margin="0" 
-                      SelectionMode="Single" 
+            <ListView Name="lv1" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="4" Grid.RowSpan="3" 
+                      SelectionMode="Single"
+                      Margin="0,0,0,10"
                       ItemsSource="{Binding Path=Tracks}" 
                       SelectedItem="{Binding Path=CurrentTrack}">
                 <ListView.View>
@@ -65,8 +63,8 @@
                 </ListView.View>
             </ListView>
             <Label x:Name="lbQueue" Grid.Column="1" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left" 
+                   VerticalAlignment="Top"
                    Content="{Binding Path=Queue.Count, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}" Background="#FFF1F1F1"/>
             <Canvas x:Name="cnvQueueLayer" Panel.ZIndex="-1">
                 <Expander x:Name="xpndr" Header="Download queue"
@@ -89,5 +87,12 @@
                 </Expander>
             </Canvas>
         </Grid>
+        <StatusBar VerticalAlignment="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="tbStatus" Grid.Column="1" 
+                           Grid.ColumnSpan="2" Grid.Row="0" 
+                           Margin="10,0"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>
