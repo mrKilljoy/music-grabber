@@ -118,43 +118,44 @@ namespace GrabberClient.ViewModels
 
         #region Trigger methods for outside calls
 
-        public async void TriggerLogin(object o)
+        public async Task TriggerLogin(object o)
         {
-            var response = await this.authManager.AuthenticateAsync(await this.credentialsReader.GetCredentialsAsync());
+            var response = await this.authManager.AuthenticateAsync(
+                await this.credentialsReader.GetCredentialsAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
-            if (!response.IsSuccess)
+            if (response.IsSuccess)
             {
-                ErrorHelper.ShowError(AppConstants.Messages.AuthorizationFailureMessage);
-                return;
-            }
-
-            var musicService = await this.serviceManager.GetServiceAsync("music");
-            if (musicService is IMusicService ms)
-            {
-                this.musicService = ms;
+                var musicService = await this.serviceManager.GetServiceAsync("music").ConfigureAwait(false);
+                if (musicService is IMusicService ms)
+                {
+                    this.musicService = ms;
+                }
             }
 
             LoginReacted?.Invoke(this, new AuthEventArgs(response));
         }
 
-        public async void TriggerDownload(object caller, bool overwrite)
+        public Task TriggerDownload(object caller, bool overwrite)
         {
             this.queueManager.Enqueue(this.currentTrack);
+            return Task.CompletedTask;
         }
 
-        public async void TriggerQuery(object caller, string input)
+        public async Task TriggerQuery(object caller, string input)
         {
-            var receivedTracks = await this.musicService.GetTracksAsync(input);
+            var receivedTracks = await this.musicService.GetTracksAsync(input).ConfigureAwait(false);
             this.Tracks = new ObservableCollection<Track>(receivedTracks);
 
             QueryReacted?.Invoke(this, EventArgs.Empty);
         }
 
-        public void TriggerLogout(object caller)
+        public Task TriggerLogout(object caller)
         {
             Tracks.Clear();
 
             LogoutReacted?.Invoke(this, EventArgs.Empty);
+
+            return Task.CompletedTask;
         }
 
         #endregion
@@ -190,7 +191,7 @@ namespace GrabberClient.ViewModels
                 await Task.Run(async () =>
                 {
                     var t = this.queueManager.Peek() as Track;
-                    return await this.musicDownloadManager.DownloadAsync(t);
+                    return await this.musicDownloadManager.DownloadAsync(t).ConfigureAwait(false);
                 })
                 .ContinueWith(a =>
                 {
@@ -217,7 +218,7 @@ namespace GrabberClient.ViewModels
                     {
                         this.isBusy = false;
                     }
-                });
+                }).ConfigureAwait(false);
             }
         }
 

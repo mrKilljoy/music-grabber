@@ -26,6 +26,7 @@
             public const string UnknownErrorWithDetailsMessage = "An unknown error has occurred.\nDetails: {0}";
             public const string NoTrackSelectedMessage = "There are no selected tracks to download.";
             public const string AuthorizationFailureMessage = "Authorization was not successful";
+            public const string CaptchaRequiredMessage = "Captcha prompt is required!";
         }
 
         public static class Metadata

@@ -81,6 +81,9 @@ namespace Grabber
                 if (c is Control ctrl)
                     ctrl.IsEnabled = isEnabled;
             }
+
+            this.xpndr.IsEnabled = isEnabled;
+            this.xpndr.IsExpanded = false;
         } 
 
         private void SetTimer()
@@ -95,6 +98,8 @@ namespace Grabber
             SetControlsState(false);
 
             this.btnLogin.IsEnabled = true;
+            this.xpndr.IsExpanded = false;
+            this.xpndr.IsEnabled = false;
             this.tb1.Text = null;
             this.tbStatus.Text = null;
         }
@@ -132,19 +137,19 @@ namespace Grabber
                     this.tb1.IsReadOnly = true;
                 }, DispatcherPriority.Background);
 
-                this.ViewModel.TriggerQuery(this, this.ViewModel.QueryInput);
-            });
+                await this.ViewModel.TriggerQuery(this, this.ViewModel.QueryInput).ConfigureAwait(false);
+            }).ConfigureAwait(false);
         }
 
         #endregion
 
         #region Command handlers
 
-        private void HandleLoginCommand(object o, ExecutedRoutedEventArgs ea)
+        private async void HandleLoginCommand(object o, ExecutedRoutedEventArgs ea)
         {
             try
             {
-                this.ViewModel.TriggerLogin(this);
+                await this.ViewModel.TriggerLogin(this).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -152,11 +157,11 @@ namespace Grabber
             }
         }
 
-        private void HandleLogoutCommand(object o, ExecutedRoutedEventArgs ea)
+        private async void HandleLogoutCommand(object o, ExecutedRoutedEventArgs ea)
         {
             try
             {
-                this.ViewModel.TriggerLogout(this);
+                await this.ViewModel.TriggerLogout(this).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -164,7 +169,7 @@ namespace Grabber
             }
         }
 
-        private void HandleDownloadCommand(object o, ExecutedRoutedEventArgs ea)
+        private async void HandleDownloadCommand(object o, ExecutedRoutedEventArgs ea)
         {
             try
             {
@@ -174,7 +179,7 @@ namespace Grabber
                     return;
                 }
 
-                this.ViewModel.TriggerDownload(this);
+                await this.ViewModel.TriggerDownload(this).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

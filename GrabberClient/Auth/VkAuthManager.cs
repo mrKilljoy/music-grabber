@@ -4,22 +4,35 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using GrabberClient.Contracts;
+using GrabberClient.Internals;
+using GrabberClient.Internals.Exceptions;
 using GrabberClient.Models;
 using VkNet;
+using VkNet.Exception;
 using VkNet.Model;
 
 namespace GrabberClient.Auth
 {
     public sealed class VkAuthManager : IAuthManager
     {
+        #region Fields
+
         private const string FootprintFileName = ".vkfp";
 
         private readonly VkApi apiInstance;
+
+        #endregion
+
+        #region .ctr
 
         public VkAuthManager(VkApi api)
         {
             this.apiInstance = api;
         }
+
+        #endregion
+
+        #region Methods
 
         public async Task<AuthResponse> AuthenticateAsync(ServiceCredentials credentials)
         {
@@ -38,7 +51,11 @@ namespace GrabberClient.Auth
                     authParams.AccessToken = storedFootprint;
                 }
 
-                await this.apiInstance.AuthorizeAsync(authParams);
+                await this.apiInstance.AuthorizeAsync(authParams).ConfigureAwait(false);
+            }
+            catch (CaptchaNeededException cee)
+            {
+                throw new VkException(AppConstants.Messages.CaptchaRequiredMessage, cee);
             }
             catch (Exception)
             {
@@ -91,5 +108,7 @@ namespace GrabberClient.Auth
 
             fs.Dispose();
         }
+
+        #endregion
     }
 }

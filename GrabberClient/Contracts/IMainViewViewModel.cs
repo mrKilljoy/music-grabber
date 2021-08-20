@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using GrabberClient.Internals;
 using GrabberClient.Internals.Delegates;
 using GrabberClient.Models;
@@ -33,13 +34,13 @@ namespace GrabberClient.Contracts
 
         #region Methods
 
-        void TriggerLogin(object caller);
+        Task TriggerLogin(object caller);
 
-        void TriggerLogout(object caller);
+        Task TriggerLogout(object caller);
 
-        void TriggerDownload(object caller, bool overwrite = false);
+        Task TriggerDownload(object caller, bool overwrite = false);
 
-        void TriggerQuery(object caller, string input);
+        Task TriggerQuery(object caller, string input);
 
         #endregion
     }
