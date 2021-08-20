@@ -4,11 +4,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using test_wpf1.Commands;
 using test_wpf1.Contracts;
-using test_wpf1.Delegates;
 using test_wpf1.Helpers;
 using test_wpf1.Internals;
+using test_wpf1.Internals.Commands;
+using test_wpf1.Internals.Delegates;
 using test_wpf1.Models;
 
 namespace test_wpf1

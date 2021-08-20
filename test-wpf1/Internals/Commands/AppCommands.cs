@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace test_wpf1.Commands
+namespace test_wpf1.Internals.Commands
 {
     public static class AppCommands
     {

@@ -1,4 +1,4 @@
-﻿using test_wpf1.Delegates;
+﻿using test_wpf1.Internals.Delegates;
 
 namespace test_wpf1.Contracts
 {

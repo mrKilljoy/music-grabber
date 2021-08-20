@@ -1,7 +1,7 @@
 ﻿using System;
 using test_wpf1.Auth;
 
-namespace test_wpf1.Delegates
+namespace test_wpf1.Internals.Delegates
 {
     public class AuthEventArgs : EventArgs
     {

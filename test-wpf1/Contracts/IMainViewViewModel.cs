@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using test_wpf1.Delegates;
 using test_wpf1.Internals;
+using test_wpf1.Internals.Delegates;
 using test_wpf1.Models;
 
 namespace test_wpf1.Contracts
