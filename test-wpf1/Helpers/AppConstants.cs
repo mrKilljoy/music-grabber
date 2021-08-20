@@ -9,6 +9,7 @@
         public const string ConfigurationFileName = "appsettings.json";
         public const string ConfigurationCredentialsSectionName = "credentials";
         public const string ConfigurationDownloadSettingsSectionName = "downloadSettings";
+        public const string AudioTrackCommonFileExtension = "mp3";
 
         public static class Statuses
         {

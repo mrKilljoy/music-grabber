@@ -31,15 +31,19 @@ namespace test_wpf1.ViewModels
         private readonly ICredentialsReader credentialsReader;
         private readonly IServiceManager serviceManager;
         private readonly IMusicDownloadManager musicDownloadManager;
-        private readonly IMusicService musicService;
         private readonly IQueueManager queueManager;
+
+        private IMusicService musicService;
 
         private ObservableCollection<Track> tracks;
         private ObservableQueue<Track> queue;
         private Track currentTrack;
         private string queryInput;
 
-        private readonly Timer queueHandlingTimer; 
+        private readonly Timer queueHandlingTimer;
+
+        private static readonly object syncObject = new object();
+        private bool isBusy;
 
         #endregion
 
@@ -56,13 +60,6 @@ namespace test_wpf1.ViewModels
             this.serviceManager = serviceManager;
             this.musicDownloadManager = musicDownloadManager;
             this.queueManager = queueManager;
-
-            //  todo: handle it differently
-            var musicService = this.serviceManager.GetServiceAsync("music").GetAwaiter().GetResult();
-            if (musicService is IMusicService ms)
-            {
-                this.musicService = ms;
-            }
 
             this.queueManager.QueueAdded += this.TriggerEnqueueing;
             this.queueManager.QueueRemoved += this.TriggerDequeueing;
@@ -124,6 +121,18 @@ namespace test_wpf1.ViewModels
         {
             var response = await this.authManager.AuthenticateAsync(await this.credentialsReader.GetCredentialsAsync());
 
+            if (!response.IsSuccess)
+            {
+                ErrorHelper.ShowError("Authorization was not successful");
+                return;
+            }
+
+            var musicService = await this.serviceManager.GetServiceAsync("music");
+            if (musicService is IMusicService ms)
+            {
+                this.musicService = ms;
+            }
+
             LoginReacted?.Invoke(this, new AuthEventArgs(response));
         }
 
@@ -134,7 +143,7 @@ namespace test_wpf1.ViewModels
 
         public async void TriggerQuery(object caller, string input)
         {
-            var receivedTracks = await this.musicService.GetTracksAsync(string.Empty);
+            var receivedTracks = await this.musicService.GetTracksAsync(input);
             this.Tracks = new ObservableCollection<Track>(receivedTracks);
 
             QueryReacted?.Invoke(this, EventArgs.Empty);
@@ -170,8 +179,13 @@ namespace test_wpf1.ViewModels
                 return;
             }
 
-            if (!this.musicDownloadManager.IsBusy && this.queueManager.Count() > 0)
+            if (!this.isBusy && this.queueManager.Count() > 0)
             {
+                lock (syncObject)
+                {
+                    this.isBusy = true;
+                }
+
                 await Task.Run(async () =>
                 {
                     var t = this.queueManager.Peek() as Track;
@@ -187,6 +201,20 @@ namespace test_wpf1.ViewModels
                         //  change it from UI context??
                         DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(results));
                         this.queueManager.Dequeue();
+                    }
+
+                    if (!results.IsSuccess)
+                    {
+                        this.queueManager.Dequeue();
+                        var message = results.OperationData.TryGet<string>("message");
+                        ErrorHelper.ShowError(message);
+                        
+                        DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(results));
+                    }
+
+                    lock(syncObject)
+                    {
+                        this.isBusy = false;
                     }
                 });
             }

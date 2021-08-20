@@ -148,11 +148,10 @@ namespace test_wpf1
                     this.tb1.IsReadOnly = true;
                 }, DispatcherPriority.Background);
 
-                //  emulate getting data delay
-                await Task.Delay(500);
+                //  extra time delay to prevent sending too many requests
+                await Task.Delay(300);
 
-                this.ViewModel.TriggerQuery(this, string.Empty);
-                
+                this.ViewModel.TriggerQuery(this, this.ViewModel.QueryInput);
             });
         }
 

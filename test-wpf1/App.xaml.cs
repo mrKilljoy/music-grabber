@@ -9,6 +9,8 @@ using test_wpf1.Contracts;
 using test_wpf1.Helpers;
 using test_wpf1.Services;
 using test_wpf1.ViewModels;
+using VkNet;
+using VkNet.AudioBypassService.Extensions;
 
 namespace test_wpf1
 {
@@ -26,39 +28,19 @@ namespace test_wpf1
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile(AppConstants.ConfigurationFileName, optional: false, reloadOnChange: true);
 
-            //try
-            //{
-            //    Configuration = builder.Build();
-
-            //    var serviceCollection = new ServiceCollection();
-            //    RegisterServices(serviceCollection);
-
-            //    ServiceProvider = serviceCollection.BuildServiceProvider();
-
-            //    var topWindow = ServiceProvider.GetService<IMainView>();
-            //    topWindow.Show();
-            //}
-            //catch (FileNotFoundException)
-            //{
-            //    ErrorHelper.ShowError(AppConstants.Messages.MissingConfigurationFileErrorMessage);
-            //    Environment.Exit(1);
-            //}
-            //catch (Exception)
-            //{
-            //    ErrorHelper.ShowError(AppConstants.Messages.UnknownErrorMessage);
-            //    Environment.Exit(1);
-            //}
-
             Safeguard.TryRun(() =>
             {
                 Configuration = builder.Build();
 
                 var serviceCollection = new ServiceCollection();
+                serviceCollection.AddAudioBypass();
+
                 RegisterServices(serviceCollection);
 
                 ServiceProvider = serviceCollection.BuildServiceProvider();
 
                 var topWindow = ServiceProvider.GetService<IMainView>();
+
                 topWindow.Show();
             }, terminateOnFailure: true);
         }
@@ -70,9 +52,11 @@ namespace test_wpf1
             services.AddSingleton<IMainView, MainWindow>();
             services.AddTransient<IMainViewViewModel, MainWindowViewModel>();
             services.AddScoped<ICredentialsReader, ConfigurationCredentialsReader>();
-            services.AddScoped<IAuthManager, DummyAuthManager>();
-            services.AddScoped<IServiceManager, DummyServiceManager>();
-            services.AddScoped<IMusicDownloadManager, DummyMusicDownloadManager>();
+            services.AddSingleton<VkApi>(f => new VkApi(services));
+            services.AddSingleton<IAuthManager, VkAuthManager>();
+            services.AddSingleton<IServiceManager, VkServiceManager>();
+            services.AddScoped<IMusicService, VkMusicService>();
+            services.AddScoped<IMusicDownloadManager, VkMusicDownloadManager>();
             services.AddScoped<IQueueManager, DownloadQueueManager>();
         }
     }
