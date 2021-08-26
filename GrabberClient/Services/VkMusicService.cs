@@ -15,32 +15,48 @@ namespace GrabberClient.Services
     /// </summary>
     public sealed class VkMusicService : IMusicService
     {
+        #region Constants
+
+        private const int QueryResultsLimit = 30;
+
+        #endregion
+
+        #region Fields
+
         private readonly VkApi api;
+
+        #endregion
+
+        #region .ctr
 
         public VkMusicService(VkApi api) => this.api = api;
 
+        #endregion
+
+        #region Methods
+
         public async Task<IEnumerable<Track>> GetTracksAsync(string query)
         {
-            List<Track> results = new List<Track>();
+            List<Track> trackList = new List<Track>();
 
             try
             {
-                var found = await this.api.Audio.SearchAsync(new AudioSearchParams
+                var searchResults = await this.api.Audio.SearchAsync(new AudioSearchParams
                 {
                     Query = query,
-                    Count = 30
-                });
+                    Count = QueryResultsLimit
+                }).ConfigureAwait(false);
 
-                if (found != null && found.Count > 0)
+                if (searchResults is not null && searchResults.Count > 0)
                 {
-                    results.AddRange(found.Select(t => new Track
+                    trackList.AddRange(searchResults.Select(t => new Track
                     {
                         Title = t.Title,
                         Artist = t.Artist,
                         Length = TimeSpan.FromSeconds(t.Duration),
                         IsHQ = t.IsHq ?? default,
                         UID = Guid.NewGuid(),
-                        Url = t.Url != null ? ParseTrackUri(t.Url) : null,
+                        Url = t.Url is not null ? ParseTrackUri(t.Url) : null,
                         Extension = AppConstants.AudioTrackCommonFileExtension
                     }));
                 }
@@ -50,7 +66,7 @@ namespace GrabberClient.Services
                 throw;
             }
 
-            return results;
+            return trackList;
         }
 
         private string ParseTrackUri(Uri trackUri)
@@ -63,5 +79,7 @@ namespace GrabberClient.Services
 
             return $"{trackUri.Scheme}://{trackUri.Host}{string.Join(string.Empty, segments)}{trackUri.Query}";
         }
+
+        #endregion
     }
 }

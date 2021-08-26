@@ -190,15 +190,15 @@ namespace GrabberClient.ViewModels
 
                 await Task.Run(async () =>
                 {
-                    var t = this.queueManager.Peek() as Track;
-                    return await this.musicDownloadManager.DownloadAsync(t).ConfigureAwait(false);
+                    var track = this.queueManager.Peek() as Track;
+                    return await this.musicDownloadManager.DownloadAsync(track).ConfigureAwait(false);
                 })
-                .ContinueWith(a =>
+                .ContinueWith(taskResults =>
                 {
-                    var results = a.Result;
+                    var results = taskResults.Result;
                     var track = this.queueManager.Peek() as Track;
 
-                    if (results.IsSuccess && results.OperationData.TryGet<Guid>("UID") == track.UID)
+                    if (results.IsSuccess && results.OperationData.TryGet<Guid>(AppConstants.Metadata.UidField) == track.UID)
                     {
                         //  change it from UI context??
                         DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(results));
@@ -208,7 +208,7 @@ namespace GrabberClient.ViewModels
                     if (!results.IsSuccess)
                     {
                         this.queueManager.Dequeue();
-                        var message = results.OperationData.TryGet<string>("message");
+                        var message = results.OperationData.TryGet<string>(AppConstants.Metadata.MessageField);
                         ErrorHelper.ShowError(message);
                         
                         DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(results));

@@ -31,7 +31,10 @@
 
         public static class Metadata
         {
-            public const string ErrorMessageField = "errorMessage";
+            public const string MessageField = ".message";
+            public const string ErrorMessageField = ".errorMessage";
+            public const string ExceptionField = ".exception";
+            public const string UidField = ".uid";
         }
     }
 }

@@ -10,6 +10,7 @@ using GrabberClient.Helpers;
 using GrabberClient.Models;
 using GrabberClient.Internals.Exceptions;
 using GrabberClient.Configuration;
+using GrabberClient.Internals;
 
 namespace GrabberClient.Services
 {
@@ -19,7 +20,7 @@ namespace GrabberClient.Services
 
         private readonly Regex filenamePattern = new Regex("^([A-Za-z0-9 \\&\\-\\]){1,}\\(([0-9]){1,}\\).mp3$");
 
-        private DownloadSettingsSection settings;
+        private readonly DownloadSettingsSection settings;
 
         #endregion
 
@@ -45,19 +46,19 @@ namespace GrabberClient.Services
 
                     string trackName = BuildTrackName(track);
 
-                    await webClient.DownloadFileTaskAsync(track.Url, trackName);
+                    await webClient.DownloadFileTaskAsync(track.Url, trackName).ConfigureAwait(false);
 
                     return new TrackDownloadResult(true, new Dictionary<string, object>
                     {
-                        [nameof(track.UID)] = track.UID
+                        [AppConstants.Metadata.UidField] = track.UID
                     });
                 }
                 catch (Exception ex)
                 {
                     return new TrackDownloadResult(false, new Dictionary<string, object>
                     {
-                        ["message"] = ex.Message,
-                        ["exception"] = ex
+                        [AppConstants.Metadata.MessageField] = ex.Message,
+                        [AppConstants.Metadata.ExceptionField] = ex
                     });
                 }
             }
