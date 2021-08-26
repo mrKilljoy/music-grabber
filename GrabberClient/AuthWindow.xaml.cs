@@ -3,6 +3,7 @@ using GrabberClient.Internals.Commands;
 using GrabberClient.Internals.Delegates;
 using GrabberClient.Models;
 using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -73,6 +74,9 @@ namespace GrabberClient
 
         private void HandleLogoutEvent(object o, EventArgs ea)
         {
+            if (ea is CancelEventArgs cea)
+                cea.Cancel = true;
+
             this.Dispatcher.BeginInvoke(delegate
             {
                 this.mainView.Hide();
@@ -95,6 +99,7 @@ namespace GrabberClient
         {
             this.ViewModel.LoggedIn += this.HandleLogintEvent;
             this.mainView.ViewModel.LogoutReacted += this.HandleLogoutEvent;
+            this.mainView.Closing += this.HandleLogoutEvent;
         }
 
         #endregion

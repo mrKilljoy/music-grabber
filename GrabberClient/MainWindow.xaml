@@ -6,7 +6,9 @@
         xmlns:cmd="clr-namespace:GrabberClient.Internals.Commands"
         mc:Ignorable="d"
         Title="Grabber" Height="350" Width="380"
-        DataContext="{Binding}" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        DataContext="{Binding}" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        >
     <Window.Resources>
         <Style TargetType="Button" x:Key="buttonBoldFont">
             <Setter Property="FontWeight" Value="Bold"/>
