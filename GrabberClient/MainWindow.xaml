@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:cmd="clr-namespace:GrabberClient.Internals.Commands"
         mc:Ignorable="d"
-        Title="Grabber" Height="350" Width="380"
+        Title="Grabber" Height="350" Width="420"
         DataContext="{Binding}" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         >
@@ -19,7 +19,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="0.7*"/>
+                <ColumnDefinition Width="0.6*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition />
@@ -56,6 +56,20 @@
                         </GridView.Columns>
                     </GridView>
                 </ListView.View>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="ToolTip">
+                            <Setter.Value>
+                                <UniformGrid Columns="1">
+                                    <TextBlock Text="{Binding Path=Title, StringFormat=Title: {0}}"/>
+                                    <TextBlock Text="{Binding Path=Artist, StringFormat=Artist: {0}}"/>
+                                    <TextBlock Text="{Binding Path=Album, StringFormat=Album: {0}}"/>
+                                    <TextBlock Text="{Binding Path=Length, StringFormat=Duration: {0}}"/>
+                                </UniformGrid>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
             </ListView>
             <Label x:Name="lbQueue" Grid.Column="1" 
                    HorizontalAlignment="Left" 

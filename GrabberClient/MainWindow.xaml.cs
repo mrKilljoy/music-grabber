@@ -54,17 +54,17 @@ namespace Grabber
 
         private void SetHandlers()
         {
-            this.tb1.TextChanged += HandleQueryInput;
+            this.tb1.TextChanged += this.HandleQueryInput;
 
-            this.ViewModel.TrackEnqueueingReacted += HandleTrackEnqueueingEvent;
-            this.ViewModel.TrackDequeueingReacted += HandleTrackDequeueingEvent;
-            this.ViewModel.QueryReacted += HandleQueryEvent;
+            this.ViewModel.TrackEnqueueingReacted += this.HandleTrackEnqueueingEventAsync;
+            this.ViewModel.TrackDequeueingReacted += this.HandleTrackDequeueingEventAsync;
+            this.ViewModel.QueryReacted += this.HandleQueryEventAsync;
         }
 
         private void SetBindings()
         {
-            this.CommandBindings.Add(new CommandBinding(AppCommands.LogoutCommand, HandleLogoutCommand));
-            this.CommandBindings.Add(new CommandBinding(AppCommands.DownloadCommand, HandleDownloadCommand));
+            this.CommandBindings.Add(new CommandBinding(AppCommands.LogoutCommand, this.HandleLogoutCommandAsync));
+            this.CommandBindings.Add(new CommandBinding(AppCommands.DownloadCommand, this.HandleDownloadCommandAsync));
         }
 
         private void SetTimer()
@@ -119,7 +119,7 @@ namespace Grabber
 
         #region Command handlers
 
-        private async void HandleLogoutCommand(object o, ExecutedRoutedEventArgs ea)
+        private async void HandleLogoutCommandAsync(object o, ExecutedRoutedEventArgs ea)
         {
             try
             {
@@ -133,7 +133,7 @@ namespace Grabber
             }
         }
 
-        private async void HandleDownloadCommand(object o, ExecutedRoutedEventArgs ea)
+        private async void HandleDownloadCommandAsync(object o, ExecutedRoutedEventArgs ea)
         {
             try
             {
@@ -157,7 +157,7 @@ namespace Grabber
 
         #region Event handlers
 
-        private async void HandleQueryEvent(object sender, EventArgs e)
+        private async void HandleQueryEventAsync(object sender, EventArgs e)
         {
             await this.Dispatcher.BeginInvoke(delegate
             {
@@ -166,7 +166,7 @@ namespace Grabber
             }, DispatcherPriority.Normal);
         }
 
-        private async void HandleTrackEnqueueingEvent(object sender, EntityQueuedEventArgs e)
+        private async void HandleTrackEnqueueingEventAsync(object sender, EntityQueuedEventArgs e)
         {
             await this.Dispatcher.BeginInvoke(delegate
             {
@@ -174,7 +174,7 @@ namespace Grabber
             }, DispatcherPriority.Normal);
         }
 
-        private async void HandleTrackDequeueingEvent(object sender, EntityQueuedEventArgs e)
+        private async void HandleTrackDequeueingEventAsync(object sender, EntityQueuedEventArgs e)
         {
             await this.Dispatcher.BeginInvoke(delegate
             {

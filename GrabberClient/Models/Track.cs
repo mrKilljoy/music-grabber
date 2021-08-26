@@ -9,6 +9,8 @@ namespace GrabberClient.Models
 
         public string Title { get; set; }
 
+        public string Album { get; set; }
+
         public TimeSpan? Length { get; set; }
 
         public bool IsHQ { get; set; }

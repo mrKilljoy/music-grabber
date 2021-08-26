@@ -53,10 +53,11 @@ namespace GrabberClient.Services
                     {
                         Title = t.Title,
                         Artist = t.Artist,
+                        Album = t.Album?.Title,
                         Length = TimeSpan.FromSeconds(t.Duration),
                         IsHQ = t.IsHq ?? default,
                         UID = Guid.NewGuid(),
-                        Url = t.Url is not null ? ParseTrackUri(t.Url) : null,
+                        Url = t.Url?.ToString(),
                         Extension = AppConstants.AudioTrackCommonFileExtension
                     }));
                 }
@@ -67,17 +68,6 @@ namespace GrabberClient.Services
             }
 
             return trackList;
-        }
-
-        private string ParseTrackUri(Uri trackUri)
-        {
-            var segments = trackUri.Segments.ToList();
-            segments.RemoveAt((segments.Count - 1) / 2);
-            segments.RemoveAt(segments.Count - 1);
-
-            segments[segments.Count - 1] = segments[segments.Count - 1].Replace("/", ".mp3");
-
-            return $"{trackUri.Scheme}://{trackUri.Host}{string.Join(string.Empty, segments)}{trackUri.Query}";
         }
 
         #endregion

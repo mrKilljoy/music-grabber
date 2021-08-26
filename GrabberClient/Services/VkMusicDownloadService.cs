@@ -11,6 +11,7 @@ using GrabberClient.Models;
 using GrabberClient.Internals.Exceptions;
 using GrabberClient.Configuration;
 using GrabberClient.Internals;
+using System.Linq;
 
 namespace GrabberClient.Services
 {
@@ -44,9 +45,10 @@ namespace GrabberClient.Services
                     if (string.IsNullOrEmpty(track.Url))
                         throw new VkTrackMissingUrlException(track);
 
-                    string trackName = BuildTrackName(track);
+                    string trackName = this.BuildTrackName(track);
+                    string trackUrl = this.ParseTrackUri(track.Url);
 
-                    await webClient.DownloadFileTaskAsync(track.Url, trackName).ConfigureAwait(false);
+                    await webClient.DownloadFileTaskAsync(trackUrl, trackName).ConfigureAwait(false);
 
                     return new TrackDownloadResult(true, new Dictionary<string, object>
                     {
@@ -97,6 +99,18 @@ namespace GrabberClient.Services
             fullTrackPath = Path.Combine(trackFolderPath, trackFilename);
 
             return fullTrackPath;
+        }
+
+        private string ParseTrackUri(string trackUrl)
+        {
+            var trackUri = new Uri(trackUrl);
+            var segments = trackUri.Segments.ToList();
+            segments.RemoveAt((segments.Count - 1) / 2);
+            segments.RemoveAt(segments.Count - 1);
+
+            segments[segments.Count - 1] = segments[segments.Count - 1].Replace("/", ".mp3");
+
+            return $"{trackUri.Scheme}://{trackUri.Host}{string.Join(string.Empty, segments)}{trackUri.Query}";
         }
 
         #endregion

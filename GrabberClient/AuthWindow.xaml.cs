@@ -48,7 +48,7 @@ namespace GrabberClient
 
         #region Command handlers
 
-        private async void HandleLoginCommand(object o, ExecutedRoutedEventArgs ea)
+        private async void HandleLoginCommandAsync(object o, ExecutedRoutedEventArgs ea)
         {
             await this.ViewModel.Authorize(new VkServiceCredentials()).ConfigureAwait(false);
         }
@@ -92,7 +92,7 @@ namespace GrabberClient
         private void SetBindings()
         {
             this.CommandBindings.Add(new CommandBinding(AppCommands.ExitCommand, this.HandleAppExitCommand));
-            this.CommandBindings.Add(new CommandBinding(AppCommands.LoginCommand, this.HandleLoginCommand));
+            this.CommandBindings.Add(new CommandBinding(AppCommands.LoginCommand, this.HandleLoginCommandAsync));
         }
 
         private void SetHandlers()
