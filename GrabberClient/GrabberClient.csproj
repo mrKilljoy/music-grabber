@@ -7,10 +7,11 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>app_icon.ico</ApplicationIcon>
     <AssemblyName>GrabberClient</AssemblyName>
-    <Configurations>Debug;Release;release_compact</Configurations>
+    <Configurations>Debug;Release;ReleaseCompact</Configurations>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_compact|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseCompact|AnyCPU'">
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
