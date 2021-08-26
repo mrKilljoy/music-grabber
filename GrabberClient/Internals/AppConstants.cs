@@ -35,6 +35,7 @@
             public const string ErrorMessageField = ".errorMessage";
             public const string ExceptionField = ".exception";
             public const string UidField = ".uid";
+            public const string ApiField = ".api";
         }
     }
 }

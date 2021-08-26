@@ -34,9 +34,9 @@ namespace GrabberClient.Auth
 
         #region Methods
 
-        public async Task<AuthResponse> AuthenticateAsync(ServiceCredentials credentials)
+        public async Task<AuthResponse> AuthenticateAsync(VkServiceCredentials credentials)
         {
-            string storedFootprint = RetrieveAuthFootprint();
+            string storedFootprint = await this.RetrieveAuthFootprintAsync().ConfigureAwait(false);
 
             try
             {
@@ -63,17 +63,17 @@ namespace GrabberClient.Auth
             }
 
             var response = new AuthResponse(this.apiInstance.IsAuthorized, this.apiInstance.IsAuthorized ?
-                new Dictionary<string, object> { ["api"] = this.apiInstance } :
+                new Dictionary<string, object> { [AppConstants.Metadata.ApiField] = this.apiInstance } :
                 null);
 
             //  todo: check token lifetime?
             if (this.apiInstance.IsAuthorized)
-                SaveAuthFootprint(this.apiInstance.Token);
+                await this.SaveAuthFootprint(this.apiInstance.Token).ConfigureAwait(false);
 
             return response;
         }
 
-        private string RetrieveAuthFootprint()
+        private async Task<string> RetrieveAuthFootprintAsync()
         {
             string fileName = Path.Combine(Directory.GetCurrentDirectory(), FootprintFileName);
 
@@ -82,11 +82,12 @@ namespace GrabberClient.Auth
 
             using (var streamReader = new StreamReader(fileName))
             {
-                return streamReader.ReadToEnd();
+                return await streamReader.ReadToEndAsync()
+                    .ConfigureAwait(false);
             }
         }
 
-        private void SaveAuthFootprint(string token)
+        private async Task SaveAuthFootprint(string token)
         {
             string fileName = Path.Combine(Directory.GetCurrentDirectory(), FootprintFileName);
 
@@ -103,10 +104,10 @@ namespace GrabberClient.Auth
             }
 
             var bytes = Encoding.UTF8.GetBytes(token);
-            fs.Write(bytes, 0, bytes.Length);
-            fs.Flush(true);
+            await fs.WriteAsync(bytes, 0, bytes.Length).ConfigureAwait(false);
+            await fs.FlushAsync().ConfigureAwait(false);
 
-            fs.Dispose();
+            await fs.DisposeAsync().ConfigureAwait(false);
         }
 
         #endregion

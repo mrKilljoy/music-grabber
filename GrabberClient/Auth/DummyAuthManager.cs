@@ -8,7 +8,7 @@ namespace GrabberClient.Auth
 {
     public sealed class DummyAuthManager : IAuthManager
     {
-        public Task<AuthResponse> AuthenticateAsync(ServiceCredentials credentials)
+        public Task<AuthResponse> AuthenticateAsync(VkServiceCredentials credentials)
         {
             if (string.IsNullOrEmpty(credentials.AppToken))
                 throw new ArgumentException(nameof(credentials.AppToken));

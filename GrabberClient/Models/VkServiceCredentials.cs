@@ -1,6 +1,8 @@
-﻿namespace GrabberClient.Models
+﻿using GrabberClient.Contracts;
+
+namespace GrabberClient.Models
 {
-    public class ServiceCredentials
+    public class VkServiceCredentials : IServiceCredentials
     {
         public string Login { get; set; }
 

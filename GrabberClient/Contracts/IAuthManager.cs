@@ -9,6 +9,6 @@ namespace GrabberClient.Contracts
     /// </summary>
     public interface IAuthManager
     {
-        Task<AuthResponse> AuthenticateAsync(ServiceCredentials credentials); 
+        Task<AuthResponse> AuthenticateAsync(VkServiceCredentials credentials); 
     }
 }

@@ -1,4 +1,5 @@
-﻿using GrabberClient.Auth;
+﻿using GrabberClient;
+using GrabberClient.Auth;
 using GrabberClient.Configuration;
 using GrabberClient.Contracts;
 using GrabberClient.Helpers;
@@ -40,7 +41,8 @@ namespace Grabber
 
                 ServiceProvider = serviceCollection.BuildServiceProvider();
 
-                var topWindow = ServiceProvider.GetService<IMainView>();
+                //var topWindow = ServiceProvider.GetService<IMainView>();
+                var topWindow = ServiceProvider.GetService<IAuthView>();
 
                 topWindow.Show();
             }, terminateOnFailure: true);
@@ -51,7 +53,9 @@ namespace Grabber
             services.Configure<CredentialsSection>(Configuration.GetSection(AppConstants.ConfigurationCredentialsSectionName));
             services.Configure<DownloadSettingsSection>(Configuration.GetSection(AppConstants.ConfigurationDownloadSettingsSectionName));
             services.AddSingleton<IMainView, MainWindow>();
+            services.AddSingleton<IAuthView, AuthWindow>();
             services.AddTransient<IMainViewViewModel, MainWindowViewModel>();
+            services.AddTransient<IAuthViewViewModel, AuthWindowViewModel>();
             services.AddScoped<ICredentialsReader, ConfigurationCredentialsReader>();
             services.AddSingleton<VkApi>(f => new VkApi(services));
             services.AddSingleton<IAuthManager, VkAuthManager>();

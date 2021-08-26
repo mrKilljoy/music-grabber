@@ -8,6 +8,6 @@ namespace GrabberClient.Contracts
     /// </summary>
     public interface ICredentialsReader
     {
-        Task<ServiceCredentials> GetCredentialsAsync();
+        Task<VkServiceCredentials> GetCredentialsAsync();
     }
 }

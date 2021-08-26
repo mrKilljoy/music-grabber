@@ -35,20 +35,23 @@ namespace Grabber
             this.viewModel = viewModel;
             this.DataContext = this.ViewModel;
 
-            SetHandlers();
-            SetBindings();
-            SetTimer();
+            this.SetHandlers();
+            this.SetBindings();
+            this.SetTimer();
 
             //  prepare the app's initial state
-            SetControlsState(false);
-            this.btnLogin.IsEnabled = true;
+            //this.SetControlsState(false);
+            //this.btnLogin.IsEnabled = true;
+
+            //  todo: remove button
+            this.btnLogin.Visibility = Visibility.Collapsed;
         }
 
         #endregion
 
         #region Properties
 
-        public IMainViewViewModel ViewModel => viewModel;
+        public IMainViewViewModel ViewModel => this.viewModel;
 
         IViewModel IView.ViewModel => this.viewModel;
 
@@ -60,8 +63,8 @@ namespace Grabber
         {
             this.tb1.TextChanged += HandleQueryInput;
 
-            this.ViewModel.LoginReacted += HandleLoginEvent;
-            this.ViewModel.LogoutReacted += HandleLogoutEvent;
+            //this.ViewModel.LoginReacted += HandleLoginEvent;
+            //this.ViewModel.LogoutReacted += HandleLogoutEvent;
             this.ViewModel.TrackEnqueueingReacted += HandleTrackEnqueueingEvent;
             this.ViewModel.TrackDequeueingReacted += HandleTrackDequeueingEvent;
             this.ViewModel.QueryReacted += HandleQueryEvent;
@@ -69,9 +72,9 @@ namespace Grabber
 
         private void SetBindings()
         {
-            CommandBindings.Add(new CommandBinding(AppCommands.LoginCommand, HandleLoginCommand));
-            CommandBindings.Add(new CommandBinding(AppCommands.LogoutCommand, HandleLogoutCommand));
-            CommandBindings.Add(new CommandBinding(AppCommands.DownloadCommand, HandleDownloadCommand));
+            //this.CommandBindings.Add(new CommandBinding(AppCommands.LoginCommand, HandleLoginCommand));
+            this.CommandBindings.Add(new CommandBinding(AppCommands.LogoutCommand, HandleLogoutCommand));
+            this.CommandBindings.Add(new CommandBinding(AppCommands.DownloadCommand, HandleDownloadCommand));
         }
 
         private void SetControlsState(bool isEnabled)
@@ -90,12 +93,12 @@ namespace Grabber
         {
             this.queryDelayTimer = new DispatcherTimer(DispatcherPriority.Background, this.Dispatcher);
             this.queryDelayTimer.Interval = TimeSpan.FromMilliseconds(AppConstants.QueryDelayInMilliseconds);
-            this.queryDelayTimer.Tick += TimerTick;
+            this.queryDelayTimer.Tick += this.HandleTimerTickAsync;
         }
         
         private void SetAsLoggedOut()
         {
-            SetControlsState(false);
+            this.SetControlsState(false);
 
             this.btnLogin.IsEnabled = true;
             this.xpndr.IsExpanded = false;
@@ -126,7 +129,7 @@ namespace Grabber
                 DispatcherPriority.Normal);
         }
 
-        private async void TimerTick(object o, EventArgs e)
+        private async void HandleTimerTickAsync(object o, EventArgs e)
         {
             this.queryDelayTimer.Stop();
             await Task.Run(async () =>

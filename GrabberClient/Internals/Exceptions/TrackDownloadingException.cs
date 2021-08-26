@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace GrabberClient.Internals.Exceptions
+﻿namespace GrabberClient.Internals.Exceptions
 {
-    public class TrackDownloadingException : Exception
+    public class TrackDownloadingException : AppException
     {
         public TrackDownloadingException() : base() { }
 

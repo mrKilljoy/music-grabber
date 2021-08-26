@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace GrabberClient.Internals.Exceptions
+﻿namespace GrabberClient.Internals.Exceptions
 {
-    public sealed class VkServiceResolvingException : Exception
+    public sealed class VkServiceResolvingException : VkException
     {
         public VkServiceResolvingException(string message) : base(message) { }
     }

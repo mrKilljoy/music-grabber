@@ -1,0 +1,36 @@
+﻿<Window x:Class="GrabberClient.AuthWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GrabberClient"
+        xmlns:cmd="clr-namespace:GrabberClient.Internals.Commands"
+        mc:Ignorable="d"
+        Title="Authorization" Height="120" Width="200" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <GroupBox x:Name="gbx" Header="Choose action"
+                      Grid.Column="0" Grid.Row="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button x:Name="btnLogin" Command="cmd:AppCommands.LoginCommand"
+                            Grid.Column="0" Grid.Row="0"
+                            Height="25" Content="Sign in"/>
+                    <Button x:Name="btnExit" Command="cmd:AppCommands.ExitCommand"
+                            Grid.Column="0" Grid.Row="2"
+                            Height="25" Content="Exit"/>
+                </Grid>
+            </GroupBox>
+            
+        </Grid>
+    </Grid>
+</Window>

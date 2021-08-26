@@ -30,7 +30,6 @@ namespace GrabberClient.ViewModels
 
         private readonly IAuthManager authManager;
         private readonly ICredentialsReader credentialsReader;
-        private readonly IServiceManager serviceManager;
         private readonly IMusicDownloadService musicDownloadManager;
         private readonly IQueueService queueManager;
 
@@ -52,13 +51,13 @@ namespace GrabberClient.ViewModels
 
         public MainWindowViewModel(IAuthManager authManager,
             ICredentialsReader credentialsReader,
-            IServiceManager serviceManager,
+            IMusicService musicService,
             IMusicDownloadService musicDownloadManager,
             IQueueService queueManager)
         {
             this.authManager = authManager;
             this.credentialsReader = credentialsReader;
-            this.serviceManager = serviceManager;
+            this.musicService = musicService;
             this.musicDownloadManager = musicDownloadManager;
             this.queueManager = queueManager;
 
@@ -120,19 +119,19 @@ namespace GrabberClient.ViewModels
 
         public async Task TriggerLogin(object o)
         {
-            var response = await this.authManager.AuthenticateAsync(
-                await this.credentialsReader.GetCredentialsAsync().ConfigureAwait(false)).ConfigureAwait(false);
+            //var response = await this.authManager.AuthenticateAsync(
+            //    await this.credentialsReader.GetCredentialsAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
-            if (response.IsSuccess)
-            {
-                var musicService = await this.serviceManager.GetServiceAsync("music").ConfigureAwait(false);
-                if (musicService is IMusicService ms)
-                {
-                    this.musicService = ms;
-                }
-            }
+            //if (response.IsSuccess)
+            //{
+            //    var musicService = await this.serviceManager.GetServiceAsync("music").ConfigureAwait(false);
+            //    if (musicService is IMusicService ms)
+            //    {
+            //        this.musicService = ms;
+            //    }
+            //}
 
-            LoginReacted?.Invoke(this, new AuthEventArgs(response));
+            //LoginReacted?.Invoke(this, new AuthEventArgs(response));
         }
 
         public Task TriggerDownload(object caller, bool overwrite)

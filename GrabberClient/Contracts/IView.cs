@@ -5,5 +5,7 @@
         IViewModel ViewModel { get; }
 
         void Show();
+
+        void Hide();
     }
 }

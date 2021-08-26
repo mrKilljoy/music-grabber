@@ -13,9 +13,9 @@ namespace GrabberClient.Helpers
         public ConfigurationCredentialsReader(IOptions<CredentialsSection> credentialsSection) 
             => _credentialsSection = credentialsSection.Value;
 
-        public Task<ServiceCredentials> GetCredentialsAsync()
+        public Task<VkServiceCredentials> GetCredentialsAsync()
         {
-            var credentials = new ServiceCredentials
+            var credentials = new VkServiceCredentials
             {
                 Login = _credentialsSection.Login,
                 Password = _credentialsSection.Password,
