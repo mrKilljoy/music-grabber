@@ -41,7 +41,6 @@ namespace Grabber
 
                 ServiceProvider = serviceCollection.BuildServiceProvider();
 
-                //var topWindow = ServiceProvider.GetService<IMainView>();
                 var topWindow = ServiceProvider.GetService<IAuthView>();
 
                 topWindow.Show();
@@ -59,7 +58,6 @@ namespace Grabber
             services.AddScoped<ICredentialsReader, ConfigurationCredentialsReader>();
             services.AddSingleton<VkApi>(f => new VkApi(services));
             services.AddSingleton<IAuthManager, VkAuthManager>();
-            services.AddSingleton<IServiceManager, VkServiceManager>();
             services.AddScoped<IMusicService, VkMusicService>();
             services.AddScoped<IMusicDownloadService, VkMusicDownloadService>();
             services.AddScoped<IQueueService, DownloadQueueService>();

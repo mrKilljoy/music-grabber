@@ -1,19 +1,10 @@
 ﻿using GrabberClient.Contracts;
 using GrabberClient.Internals.Commands;
 using GrabberClient.Internals.Delegates;
+using GrabberClient.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace GrabberClient
@@ -58,7 +49,7 @@ namespace GrabberClient
 
         private async void HandleLoginCommand(object o, ExecutedRoutedEventArgs ea)
         {
-            await this.ViewModel.Authorize(new Models.VkServiceCredentials()).ConfigureAwait(false);
+            await this.ViewModel.Authorize(new VkServiceCredentials()).ConfigureAwait(false);
         }
 
         private void HandleAppExitCommand(object o, ExecutedRoutedEventArgs ea)

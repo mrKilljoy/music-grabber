@@ -11,7 +11,6 @@ namespace GrabberClient.Contracts
     {
         #region Events
 
-        event AuthEventHandler LoginReacted;
         event EventHandler LogoutReacted;
         event TrackDownloadEventHandler DownloadReacted;
         event EventHandler QueryReacted;
@@ -33,8 +32,6 @@ namespace GrabberClient.Contracts
         #endregion
 
         #region Methods
-
-        Task TriggerLogin(object caller);
 
         Task TriggerLogout(object caller);
 

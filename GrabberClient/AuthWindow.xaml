@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:GrabberClient"
         xmlns:cmd="clr-namespace:GrabberClient.Internals.Commands"
         mc:Ignorable="d"
-        Title="Authorization" Height="120" Width="200" WindowStartupLocation="CenterScreen">
+        Title="Authorization" Height="120" Width="200" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -16,7 +16,8 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <GroupBox x:Name="gbx" Header="Choose action"
-                      Grid.Column="0" Grid.Row="0">
+                      Grid.Column="0" Grid.Row="0"
+                      Margin="3,0,3,3">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -30,7 +31,6 @@
                             Height="25" Content="Exit"/>
                 </Grid>
             </GroupBox>
-            
         </Grid>
     </Grid>
 </Window>

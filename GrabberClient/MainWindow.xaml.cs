@@ -38,13 +38,6 @@ namespace Grabber
             this.SetHandlers();
             this.SetBindings();
             this.SetTimer();
-
-            //  prepare the app's initial state
-            //this.SetControlsState(false);
-            //this.btnLogin.IsEnabled = true;
-
-            //  todo: remove button
-            this.btnLogin.Visibility = Visibility.Collapsed;
         }
 
         #endregion
@@ -63,8 +56,6 @@ namespace Grabber
         {
             this.tb1.TextChanged += HandleQueryInput;
 
-            //this.ViewModel.LoginReacted += HandleLoginEvent;
-            //this.ViewModel.LogoutReacted += HandleLogoutEvent;
             this.ViewModel.TrackEnqueueingReacted += HandleTrackEnqueueingEvent;
             this.ViewModel.TrackDequeueingReacted += HandleTrackDequeueingEvent;
             this.ViewModel.QueryReacted += HandleQueryEvent;
@@ -72,22 +63,9 @@ namespace Grabber
 
         private void SetBindings()
         {
-            //this.CommandBindings.Add(new CommandBinding(AppCommands.LoginCommand, HandleLoginCommand));
             this.CommandBindings.Add(new CommandBinding(AppCommands.LogoutCommand, HandleLogoutCommand));
             this.CommandBindings.Add(new CommandBinding(AppCommands.DownloadCommand, HandleDownloadCommand));
         }
-
-        private void SetControlsState(bool isEnabled)
-        {
-            foreach (var c in this.innerGrid.Children)
-            {
-                if (c is Control ctrl)
-                    ctrl.IsEnabled = isEnabled;
-            }
-
-            this.xpndr.IsEnabled = isEnabled;
-            this.xpndr.IsExpanded = false;
-        } 
 
         private void SetTimer()
         {
@@ -96,24 +74,16 @@ namespace Grabber
             this.queryDelayTimer.Tick += this.HandleTimerTickAsync;
         }
         
-        private void SetAsLoggedOut()
-        {
-            this.SetControlsState(false);
-
-            this.btnLogin.IsEnabled = true;
-            this.xpndr.IsExpanded = false;
-            this.xpndr.IsEnabled = false;
-            this.tb1.Text = null;
-            this.tbStatus.Text = null;
-        }
-
         private void HandleQueryInput(object o, TextChangedEventArgs e)
         {
             if (string.IsNullOrEmpty(this.tb1.Text))
             {
                 e.Handled = true;
                 this.queryDelayTimer.Stop();
-                this.Dispatcher.BeginInvoke(delegate { this.tbStatus.Text = null; }, DispatcherPriority.Normal);
+                this.Dispatcher.BeginInvoke(
+                    delegate { this.tbStatus.Text = null; }, 
+                    DispatcherPriority.Normal);
+
                 return;
             }
 
@@ -125,7 +95,8 @@ namespace Grabber
             else
                 this.queryDelayTimer.Start();
 
-            this.Dispatcher.BeginInvoke(delegate { this.tbStatus.Text = AppConstants.Statuses.PreparingTitle; }, 
+            this.Dispatcher.BeginInvoke(
+                delegate { this.tbStatus.Text = AppConstants.Statuses.PreparingTitle; }, 
                 DispatcherPriority.Normal);
         }
 
@@ -148,18 +119,6 @@ namespace Grabber
 
         #region Command handlers
 
-        private async void HandleLoginCommand(object o, ExecutedRoutedEventArgs ea)
-        {
-            try
-            {
-                await this.ViewModel.TriggerLogin(this).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                ErrorHelper.ShowError(string.Format(AppConstants.Messages.UnknownErrorWithDetailsMessage, ex.Message));
-            }
-        }
-
         private async void HandleLogoutCommand(object o, ExecutedRoutedEventArgs ea)
         {
             try
@@ -168,7 +127,9 @@ namespace Grabber
             }
             catch (Exception ex)
             {
-                ErrorHelper.ShowError(string.Format(AppConstants.Messages.UnknownErrorWithDetailsMessage, ex.Message));
+                ErrorHelper.ShowError(string.Format(
+                    AppConstants.Messages.UnknownErrorWithDetailsMessage, 
+                    ex.Message));
             }
         }
 
@@ -186,41 +147,15 @@ namespace Grabber
             }
             catch (Exception ex)
             {
-                ErrorHelper.ShowError(string.Format(AppConstants.Messages.UnknownErrorWithDetailsMessage, ex.Message));
+                ErrorHelper.ShowError(string.Format(
+                    AppConstants.Messages.UnknownErrorWithDetailsMessage, 
+                    ex.Message));
             }
         }
 
         #endregion
 
         #region Event handlers
-
-        private async void HandleLoginEvent(object o, AuthEventArgs ea)
-        {
-            if (ea.AuthResults != null && ea.AuthResults.IsSuccess)
-            {
-                await Task.Run(async () =>
-                {
-                    await this.Dispatcher.BeginInvoke(delegate { this.tbStatus.Text = AppConstants.Statuses.AuthenticationTitle; },
-                        DispatcherPriority.Normal);
-
-                    //  emulate auth process
-                    await Task.Delay(1000);
-
-                    await this.Dispatcher.BeginInvoke(delegate
-                    {
-                        SetControlsState(true);
-
-                        this.btnLogin.IsEnabled = false;
-                        this.tbStatus.Text = null;
-                    }, DispatcherPriority.Normal);
-                });
-            }
-        }
-
-        private async void HandleLogoutEvent(object o, EventArgs ea)
-        {
-            await this.Dispatcher.BeginInvoke(delegate { SetAsLoggedOut(); }, DispatcherPriority.Normal);
-        }
 
         private async void HandleQueryEvent(object sender, EventArgs e)
         {

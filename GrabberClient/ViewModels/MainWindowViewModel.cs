@@ -117,23 +117,6 @@ namespace GrabberClient.ViewModels
 
         #region Trigger methods for outside calls
 
-        public async Task TriggerLogin(object o)
-        {
-            //var response = await this.authManager.AuthenticateAsync(
-            //    await this.credentialsReader.GetCredentialsAsync().ConfigureAwait(false)).ConfigureAwait(false);
-
-            //if (response.IsSuccess)
-            //{
-            //    var musicService = await this.serviceManager.GetServiceAsync("music").ConfigureAwait(false);
-            //    if (musicService is IMusicService ms)
-            //    {
-            //        this.musicService = ms;
-            //    }
-            //}
-
-            //LoginReacted?.Invoke(this, new AuthEventArgs(response));
-        }
-
         public Task TriggerDownload(object caller, bool overwrite)
         {
             this.queueManager.Enqueue(this.currentTrack);
@@ -145,14 +128,14 @@ namespace GrabberClient.ViewModels
             var receivedTracks = await this.musicService.GetTracksAsync(input).ConfigureAwait(false);
             this.Tracks = new ObservableCollection<Track>(receivedTracks);
 
-            QueryReacted?.Invoke(this, EventArgs.Empty);
+            this.QueryReacted?.Invoke(this, EventArgs.Empty);
         }
 
         public Task TriggerLogout(object caller)
         {
-            Tracks.Clear();
+            this.Tracks.Clear();
 
-            LogoutReacted?.Invoke(this, EventArgs.Empty);
+            this.LogoutReacted?.Invoke(this, EventArgs.Empty);
 
             return Task.CompletedTask;
         }
@@ -200,7 +183,7 @@ namespace GrabberClient.ViewModels
                     if (results.IsSuccess && results.OperationData.TryGet<Guid>(AppConstants.Metadata.UidField) == track.UID)
                     {
                         //  change it from UI context??
-                        DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(results));
+                        this.DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(results));
                         this.queueManager.Dequeue();
                     }
 
@@ -223,8 +206,8 @@ namespace GrabberClient.ViewModels
 
         private void Notify(string propertyName)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            if (this.PropertyChanged is not null)
+                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion

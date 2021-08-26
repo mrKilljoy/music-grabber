@@ -82,13 +82,13 @@ namespace GrabberClient.Internals
 
         private void RaiseCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            if (this.CollectionChanged != null)
+            if (this.CollectionChanged is not null)
                 this.CollectionChanged(this, e);
         }
 
         private void RaisePropertyChanged(PropertyChangedEventArgs e)
         {
-            if (this.PropertyChanged != null)
+            if (this.PropertyChanged is not null)
                 this.PropertyChanged(this, e);
         }
 

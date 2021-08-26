@@ -12,7 +12,7 @@ namespace GrabberClient.Helpers
 
         public TrackDownloadResult(bool isSuccess, IDictionary<string, object> operationData = null) : this(isSuccess)
         {
-            if (operationData != null)
+            if (operationData is not null)
                 OperationData = operationData;
         }
 
