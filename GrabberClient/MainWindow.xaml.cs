@@ -56,9 +56,11 @@ namespace Grabber
         {
             this.tb1.TextChanged += this.HandleQueryInput;
 
-            this.ViewModel.TrackEnqueueingReacted += this.HandleTrackEnqueueingEventAsync;
-            this.ViewModel.TrackDequeueingReacted += this.HandleTrackDequeueingEventAsync;
-            this.ViewModel.QueryReacted += this.HandleQueryEventAsync;
+            this.ViewModel.ElementEnqueued += this.HandleTrackEnqueueingEventAsync;
+            this.ViewModel.ElementDequeued += this.HandleTrackDequeueingEventAsync;
+            this.ViewModel.DownloadStarted += this.HandleTrackDownloadStartEventAsync;
+            this.ViewModel.DownloadCompleted += this.HandleTrackDownloadEndEventAsync;
+            this.ViewModel.QueryCompleted += this.HandleQueryEventAsync;
         }
 
         private void SetBindings()
@@ -73,7 +75,7 @@ namespace Grabber
             this.queryDelayTimer.Interval = TimeSpan.FromMilliseconds(AppConstants.QueryDelayInMilliseconds);
             this.queryDelayTimer.Tick += this.HandleTimerTickAsync;
         }
-        
+
         private void HandleQueryInput(object o, TextChangedEventArgs e)
         {
             if (string.IsNullOrEmpty(this.tb1.Text))
@@ -81,7 +83,7 @@ namespace Grabber
                 e.Handled = true;
                 this.queryDelayTimer.Stop();
                 this.Dispatcher.BeginInvoke(
-                    delegate { this.tbStatus.Text = null; }, 
+                    delegate { this.tbStatus.Text = null; },
                     DispatcherPriority.Normal);
 
                 return;
@@ -96,7 +98,7 @@ namespace Grabber
                 this.queryDelayTimer.Start();
 
             this.Dispatcher.BeginInvoke(
-                delegate { this.tbStatus.Text = AppConstants.Statuses.PreparingTitle; }, 
+                delegate { this.tbStatus.Text = AppConstants.Statuses.PreparingTitle; },
                 DispatcherPriority.Normal);
         }
 
@@ -128,7 +130,7 @@ namespace Grabber
             catch (Exception ex)
             {
                 ErrorHelper.ShowError(string.Format(
-                    AppConstants.Messages.UnknownErrorWithDetailsMessage, 
+                    AppConstants.Messages.UnknownErrorWithDetailsMessage,
                     ex.Message));
             }
         }
@@ -148,7 +150,7 @@ namespace Grabber
             catch (Exception ex)
             {
                 ErrorHelper.ShowError(string.Format(
-                    AppConstants.Messages.UnknownErrorWithDetailsMessage, 
+                    AppConstants.Messages.UnknownErrorWithDetailsMessage,
                     ex.Message));
             }
         }
@@ -179,7 +181,25 @@ namespace Grabber
             await this.Dispatcher.BeginInvoke(delegate
             {
                 this.ViewModel.Queue.Dequeue();
+                this.tbStatus.Text = null;
             }, DispatcherPriority.Normal);
+        }
+
+        private async void HandleTrackDownloadStartEventAsync(object sender, EntityDownloadStartedEventArgs e)
+        {
+            await this.Dispatcher.BeginInvoke(delegate
+            {
+                var track = e.Entity as Track;
+                this.tbStatus.Text = $"...downloading \"{track.Title} - {track.Artist}\"";
+            }, DispatcherPriority.Background);
+        }
+
+        private async void HandleTrackDownloadEndEventAsync(object sender, EntityDownloadCompletedEventArgs e)
+        {
+            await this.Dispatcher.BeginInvoke(delegate
+            {
+                this.tbStatus.Text = null;
+            }, DispatcherPriority.Background);
         }
 
         #endregion

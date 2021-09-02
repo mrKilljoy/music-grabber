@@ -9,6 +9,6 @@ namespace GrabberClient.Contracts
     /// </summary>
     public interface IMusicDownloadService
     {
-        Task<TrackDownloadResult> DownloadAsync(Track track);
+        Task<EntityDownloadResult> DownloadAsync(Track track);
     }
 }

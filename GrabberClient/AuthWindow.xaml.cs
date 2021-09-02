@@ -98,7 +98,7 @@ namespace GrabberClient
         private void SetHandlers()
         {
             this.ViewModel.LoggedIn += this.HandleLogintEvent;
-            this.mainView.ViewModel.LogoutReacted += this.HandleLogoutEvent;
+            this.mainView.ViewModel.LogoutCompleted += this.HandleLogoutEvent;
             this.mainView.Closing += this.HandleLogoutEvent;
         }
 

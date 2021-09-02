@@ -27,6 +27,7 @@
             public const string NoTrackSelectedMessage = "There are no selected tracks to download.";
             public const string AuthorizationFailureMessage = "Authorization was not successful";
             public const string CaptchaRequiredMessage = "Captcha prompt is required!";
+            public const string DownloadCompleteMessage = "Download complete";
         }
 
         public static class Metadata
@@ -36,6 +37,7 @@
             public const string ExceptionField = ".exception";
             public const string UidField = ".uid";
             public const string ApiField = ".api";
+            public const string TrackPathField = ".trackPath";
         }
     }
 }

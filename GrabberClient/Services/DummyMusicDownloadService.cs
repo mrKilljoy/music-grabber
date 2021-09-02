@@ -34,11 +34,11 @@ namespace GrabberClient.Services
 
         public bool IsBusy => this.isBusy;
 
-        public Task<TrackDownloadResult> DownloadAsync(Track track)
+        public Task<EntityDownloadResult> DownloadAsync(Track track)
         {
             if (IsBusy)
             {
-                return Task.FromResult(new TrackDownloadResult(
+                return Task.FromResult(new EntityDownloadResult(
                     false,
                     new Dictionary<string, object>
                     {
@@ -50,7 +50,7 @@ namespace GrabberClient.Services
 
             if (File.Exists(filename))
             {
-                return Task.FromResult(new TrackDownloadResult(false, new Dictionary<string, object>
+                return Task.FromResult(new EntityDownloadResult(false, new Dictionary<string, object>
                 {
                     ["errorMessage"] = "a file with the same name already exists"
                 }));
@@ -70,7 +70,7 @@ namespace GrabberClient.Services
 
                     Thread.Sleep(3000);
 
-                    return Task.FromResult(new TrackDownloadResult(
+                    return Task.FromResult(new EntityDownloadResult(
                         true, new Dictionary<string, object>
                         {
                             [nameof(track.UID)] = track.UID

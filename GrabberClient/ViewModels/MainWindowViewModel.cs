@@ -16,13 +16,13 @@ namespace GrabberClient.ViewModels
         #region Events
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public event AuthEventHandler LoginReacted;
-        public event TrackDownloadEventHandler DownloadReacted;
-        public event EventHandler QueryReacted;
-        public event EventHandler LogoutReacted;
+        public event EntityDownloadStartedEventHandler DownloadStarted;
+        public event EntityDownloadCompletedEventHandler DownloadCompleted;
+        public event EventHandler QueryCompleted;
+        public event EventHandler LogoutCompleted;
 
-        public event TrackQueuedEventHandler TrackEnqueueingReacted;
-        public event TrackQueuedEventHandler TrackDequeueingReacted;
+        public event TrackQueuedEventHandler ElementEnqueued;
+        public event TrackQueuedEventHandler ElementDequeued;
 
         #endregion
 
@@ -128,14 +128,14 @@ namespace GrabberClient.ViewModels
             var receivedTracks = await this.musicService.GetTracksAsync(input).ConfigureAwait(false);
             this.Tracks = new ObservableCollection<Track>(receivedTracks);
 
-            this.QueryReacted?.Invoke(this, EventArgs.Empty);
+            this.QueryCompleted?.Invoke(this, EventArgs.Empty);
         }
 
         public Task TriggerLogout(object caller)
         {
             this.Tracks.Clear();
 
-            this.LogoutReacted?.Invoke(this, EventArgs.Empty);
+            this.LogoutCompleted?.Invoke(this, EventArgs.Empty);
 
             return Task.CompletedTask;
         }
@@ -146,13 +146,13 @@ namespace GrabberClient.ViewModels
 
         private async void TriggerEnqueueing(object caller, EntityQueuedEventArgs ea)
         {
-            this.TrackEnqueueingReacted?.Invoke(this, ea);
+            this.ElementEnqueued?.Invoke(this, ea);
             this.queueHandlingTimer.Start();
         }
 
         private async void TriggerDequeueing(object caller, EntityQueuedEventArgs ea)
         {
-            this.TrackDequeueingReacted?.Invoke(this, ea);
+            this.ElementDequeued?.Invoke(this, ea);
         }
 
         private async void QueueTimerTickAsync(object o, EventArgs e)
@@ -173,6 +173,7 @@ namespace GrabberClient.ViewModels
                 await Task.Run(async () =>
                 {
                     var track = this.queueManager.Peek() as Track;
+                    this.DownloadStarted?.Invoke(this, new EntityDownloadStartedEventArgs(track));
                     return await this.musicDownloadManager.DownloadAsync(track).ConfigureAwait(false);
                 })
                 .ContinueWith(taskResults =>
@@ -183,7 +184,7 @@ namespace GrabberClient.ViewModels
                     if (results.IsSuccess && results.OperationData.TryGet<Guid>(AppConstants.Metadata.UidField) == track.UID)
                     {
                         //  change it from UI context??
-                        this.DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(results));
+                        this.DownloadCompleted?.Invoke(this, new EntityDownloadCompletedEventArgs(results));
                         this.queueManager.Dequeue();
                     }
 
@@ -193,7 +194,7 @@ namespace GrabberClient.ViewModels
                         var message = results.OperationData.TryGet<string>(AppConstants.Metadata.MessageField);
                         ErrorHelper.ShowError(message);
                         
-                        DownloadReacted?.Invoke(this, new TrackDownloadEventArgs(results));
+                        DownloadCompleted?.Invoke(this, new EntityDownloadCompletedEventArgs(results));
                     }
 
                     lock(syncObject)

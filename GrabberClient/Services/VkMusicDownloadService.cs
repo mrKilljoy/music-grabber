@@ -36,7 +36,7 @@ namespace GrabberClient.Services
 
         #region Methods
 
-        public async Task<TrackDownloadResult> DownloadAsync(Track track)
+        public async Task<EntityDownloadResult> DownloadAsync(Track track)
         {
             using (var webClient = new WebClient())
             {
@@ -50,14 +50,15 @@ namespace GrabberClient.Services
 
                     await webClient.DownloadFileTaskAsync(trackUrl, trackName).ConfigureAwait(false);
 
-                    return new TrackDownloadResult(true, new Dictionary<string, object>
+                    return new EntityDownloadResult(true, new Dictionary<string, object>
                     {
-                        [AppConstants.Metadata.UidField] = track.UID
+                        [AppConstants.Metadata.UidField] = track.UID,
+                        [AppConstants.Metadata.TrackPathField] = trackName
                     });
                 }
                 catch (Exception ex)
                 {
-                    return new TrackDownloadResult(false, new Dictionary<string, object>
+                    return new EntityDownloadResult(false, new Dictionary<string, object>
                     {
                         [AppConstants.Metadata.MessageField] = ex.Message,
                         [AppConstants.Metadata.ExceptionField] = ex

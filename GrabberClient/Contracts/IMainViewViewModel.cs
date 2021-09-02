@@ -11,11 +11,12 @@ namespace GrabberClient.Contracts
     {
         #region Events
 
-        event EventHandler LogoutReacted;
-        event TrackDownloadEventHandler DownloadReacted;
-        event EventHandler QueryReacted;
-        event TrackQueuedEventHandler TrackEnqueueingReacted;
-        event TrackQueuedEventHandler TrackDequeueingReacted;
+        event EventHandler LogoutCompleted;
+        event EntityDownloadStartedEventHandler DownloadStarted;
+        event EntityDownloadCompletedEventHandler DownloadCompleted;
+        event EventHandler QueryCompleted;
+        event TrackQueuedEventHandler ElementEnqueued;
+        event TrackQueuedEventHandler ElementDequeued;
 
         #endregion
 
