@@ -12,6 +12,8 @@ using GrabberClient.Internals.Exceptions;
 using GrabberClient.Configuration;
 using GrabberClient.Internals;
 using System.Linq;
+using ATLTrack = ATL.Track;
+using PictureInfo = ATL.PictureInfo;
 
 namespace GrabberClient.Services
 {
@@ -38,33 +40,14 @@ namespace GrabberClient.Services
 
         public async Task<EntityDownloadResult> DownloadAsync(Track track)
         {
-            using (var webClient = new WebClient())
+            var trackResponse = await this.RetrieveTrackDataAsync(track).ConfigureAwait(false);
+            if (trackResponse.IsSuccess && track.AlbumCover is not null)
             {
-                try
-                {
-                    if (string.IsNullOrEmpty(track.Url))
-                        throw new VkTrackMissingUrlException(track);
-
-                    string trackName = this.BuildTrackName(track);
-                    string trackUrl = this.ParseTrackUri(track.Url);
-
-                    await webClient.DownloadFileTaskAsync(trackUrl, trackName).ConfigureAwait(false);
-
-                    return new EntityDownloadResult(true, new Dictionary<string, object>
-                    {
-                        [AppConstants.Metadata.UidField] = track.UID,
-                        [AppConstants.Metadata.TrackPathField] = trackName
-                    });
-                }
-                catch (Exception ex)
-                {
-                    return new EntityDownloadResult(false, new Dictionary<string, object>
-                    {
-                        [AppConstants.Metadata.MessageField] = ex.Message,
-                        [AppConstants.Metadata.ExceptionField] = ex
-                    });
-                }
+                await this.AttachMetadataAsync(track, trackResponse.OperationData.TryGet<string>(AppConstants.Metadata.TrackPathField))
+                    .ConfigureAwait(false);
             }
+
+            return trackResponse;
         }
 
         private string BuildTrackName(Track track)
@@ -112,6 +95,85 @@ namespace GrabberClient.Services
             segments[segments.Count - 1] = segments[segments.Count - 1].Replace("/", ".mp3");
 
             return $"{trackUri.Scheme}://{trackUri.Host}{string.Join(string.Empty, segments)}{trackUri.Query}";
+        }
+
+        private async Task AttachMetadataAsync(Track trackInstance, string trackPath)
+        {
+            ATLTrack t = new(trackPath);
+            t.Artist = trackInstance.Artist;
+            t.Title = trackInstance.Title;
+            t.Album = trackInstance.Album;
+            
+            if (trackInstance.AlbumCover is not null)
+            {
+                var coverDataResult = await this.RetrieveAlbumCoverData(trackInstance.AlbumCover.CoverUrl).ConfigureAwait(false);
+                if (coverDataResult.IsSuccess)
+                {
+                    var picData = PictureInfo.fromBinaryData(
+                        coverDataResult.OperationData.TryGet<byte[]>(AppConstants.Metadata.TrackAlbumCoverBytesField));
+                    t.EmbeddedPictures.Add(picData);
+                }
+            }
+
+            t.Save();
+        }
+
+        private async Task<EntityDownloadResult> RetrieveTrackDataAsync(Track track)
+        {
+            using (var webClient = new WebClient())
+            {
+                try
+                {
+                    if (string.IsNullOrEmpty(track.Url))
+                        throw new VkTrackMissingUrlException(track);
+
+                    string trackName = this.BuildTrackName(track);
+                    string trackUrl = this.ParseTrackUri(track.Url);
+
+                    await webClient.DownloadFileTaskAsync(trackUrl, trackName).ConfigureAwait(false);
+
+                    return new EntityDownloadResult(true, new Dictionary<string, object>
+                    {
+                        [AppConstants.Metadata.UidField] = track.UID,
+                        [AppConstants.Metadata.TrackPathField] = trackName
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return new EntityDownloadResult(false, new Dictionary<string, object>
+                    {
+                        [AppConstants.Metadata.MessageField] = ex.Message,
+                        [AppConstants.Metadata.ExceptionField] = ex
+                    });
+                }
+            }
+        }
+
+        private async Task<EntityDownloadResult> RetrieveAlbumCoverData(string coverUrl)
+        {
+            EntityDownloadResult result;
+
+            using (var webClient = new WebClient())
+            {
+                try
+                {
+                    var bytes = await webClient.DownloadDataTaskAsync(new Uri(coverUrl)).ConfigureAwait(false);
+                    result = new EntityDownloadResult(true, new Dictionary<string, object>
+                    {
+                        [AppConstants.Metadata.TrackAlbumCoverBytesField] = bytes
+                    });
+                }
+                catch (Exception ex)
+                {
+                    //  todo: add custom exception
+                    result = new EntityDownloadResult(false, new Dictionary<string, object>
+                    {
+                        [AppConstants.Metadata.ErrorMessageField] = ex.Message
+                    });
+                }
+            }
+
+            return result;
         }
 
         #endregion

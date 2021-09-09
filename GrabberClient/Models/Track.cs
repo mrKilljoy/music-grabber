@@ -11,6 +11,8 @@ namespace GrabberClient.Models
 
         public string Album { get; set; }
 
+        public AlbumCoverInfo AlbumCover { get; set; }
+
         public TimeSpan? Length { get; set; }
 
         public bool IsHQ { get; set; }

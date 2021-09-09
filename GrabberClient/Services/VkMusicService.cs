@@ -54,6 +54,9 @@ namespace GrabberClient.Services
                         Title = t.Title,
                         Artist = t.Artist,
                         Album = t.Album?.Title,
+                        AlbumCover = t.Album is not null && t.Album.Thumb is not null ? 
+                            new AlbumCoverInfo(t.Album.Thumb.Height, t.Album.Thumb.Width, t.Album.Thumb.Photo300) : 
+                            null,
                         Length = TimeSpan.FromSeconds(t.Duration),
                         IsHQ = t.IsHq ?? default,
                         UID = Guid.NewGuid(),

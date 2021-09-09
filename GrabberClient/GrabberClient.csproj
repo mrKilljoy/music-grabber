@@ -22,6 +22,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     <PackageReference Include="VkNet.AudioBypassService" Version="1.7.1" />
+    <PackageReference Include="z440.atl.core" Version="3.24.0" />
   </ItemGroup>
 
   <ItemGroup>

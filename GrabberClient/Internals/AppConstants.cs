@@ -38,6 +38,7 @@
             public const string UidField = ".uid";
             public const string ApiField = ".api";
             public const string TrackPathField = ".trackPath";
+            public const string TrackAlbumCoverBytesField = ".albumCoverBytes";
         }
     }
 }
