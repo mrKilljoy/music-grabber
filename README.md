@@ -5,4 +5,4 @@ A tool for fetching audio from online services.
 Download and build the app from source.
 
 ### Note:
-At the moment, it is designed to retrieve data only from VK.com.
+At the moment, it is possible to retrieve data only from VK.com.
